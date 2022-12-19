@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8964</title>
+    <!-- Style -->
+    <link 
+        href= "style/canvas.css"
+        type= "text/css"
+        rel= "stylesheet">
+    <link 
+        href= "style/start_frame.css"
+        type= "text/css"
+        rel= "stylesheet">
+    <link 
+        href= "style/restart_frame.css"
+        type= "text/css"
+        rel= "stylesheet">
+</head>
+<body>
+    <div class="ReStart-frame">
+        <div class="end_frame">
+            <p class="End_text">文字</p>
+            <button class="go_start_frame">回主頁</button>
+        </div>
+    </div>
+    <div class= "Start-frame">
+        <div class= "game-rule">
+            <div class= "container">
+                <div class= "card", style="--i: 1">
+                    <div class= "index-text">
+                        <h1 style= "color: #fc16a4">包子</h1>
+                        <img src="img/attack.png" width="100px" height="100px">
+                        <p style="color: rgb(162, 0, 255);"><span style="font-weight: bold;">遊戲道具</span><br>每獲得1個包子，可消耗維尼<br>最大生命的20分之1<br><br><span style="color: red;">每波攻擊有20%生成</span></p>
+                    </div>
+                </div>
+                <div class= "card", style="--i: 0">
+                    <div class= "index-text">
+                        <h1 style= "color: red">坦克</h1>
+                        <img src="img/tank.png" width="100px" height="100px">
+                        <p style="color: red; font-weight: bold;">碰到玩家時遊戲結束<br><br><span style="color:rgb(21, 3, 190);font-weight: normal;">每閃避過1台坦克，可消耗維尼1Hp</span></p>
+                    </div>
+                </div>
+                <div class= "card", style="--i: -1">
+                    <div class= "index-text">
+                        <h1 style= "color: rgb(28, 206, 67)">玩家</h1>
+                        <img src="img/player.png" width="100px" height="100px">
+                        <p>利用<br>←→方向鍵(或AD鍵)進行移動<br><br><span style="color: rgb(202, 2, 2)">注意：移動時，會被坦克和邊界阻擋</span></p>
+                    </div>
+                </div>
+            </div>
+            <p class= "text" style="left: 20%;">← 遊戲規則說明</p>
+        </div>
+        <div class= "selection">
+            <p class= "text" style="top: 30%;">選擇你的難度</p>
+            <label class= "diff">
+                <button class= "sele">easy</button>
+            </label>
+            <label class= "diff">
+                <button class= "sele click">normal</button>
+            </label>
+            <label class= "diff">
+                <button class= "sele">hard</button>
+            </label>
+        </div>
+        <div class= "game-rule-diff">
+            <div class= "contanter">
+                <div class= "container">
+                    <div class= "card", style="--i: 1">
+                        <div class= "index-text">
+                            <h1 style= "color: red">困難</h1>
+                            <p>維尼血量：1000Hp<br><br><span style="color: red;font-weight: bolder;">強化條件：<br>&nbsp&nbsp血量低於800時，進入一階強化<br><br>&nbsp&nbsp血量低於500時，進入二階強化<br><br>&nbsp&nbsp血量低於300時，進入三階強化</p>
+                        </div>
+                    </div>
+                    <div class= "card", style="--i: 0">
+                        <div class= "index-text">
+                            <h1 style= "color: orange">普通</h1>
+                            <p>維尼血量：500Hp<br><br><span style="color: red;font-weight: bolder;">強化條件：<br>&nbsp&nbsp血量低於300時，進入一階強化
+                            </span><br><br>===============<br>每波坦克數量<br>至少1台，最多4台<br><br>數字表示每波多1台坦克的機率</p>
+                        </div>
+                    </div>
+                    <div class= "card", style="--i: -1">
+                        <div class= "index-text">
+                            <h1 style= "color: green">簡單</h1>
+                            <p>維尼血量：100Hp<br><br><span style="color: red;">不會進行強化</span><br><br><br><br>===============<br>強化說明：<br>正常型態 >> 25%<br>第一強化 >> 35%<br>第二強化 >> 50%<br>第三強化 >> 80%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class= "text" style="left: 20%;">← 難易度說明</p>
+        </div>
+        <button class= "Start">前往 8964 戰場</botton>
+    </div>
+    <div class= "game-container">
+        <hp>
+            <text class= "Boss-Health-point-Bar">0</text>
+            <canvas class= "Outfit"></canvas>
+        </hp>
+        
+        <canvas class="game-frame" width= "350" height="300"></canvas>
+    </div>
+
+    <!-- Script-->
+    <script src= "code/game_loop.js"></script>
+    <script src= "code/start_btn.js"></script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>耘の家-1A2B</title>
+		<meta charset="UTF-8">
+		<meta name="google" content="notranslate">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.1.1/css/all.css">
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+		<link rel="stylesheet" href="http://myweb.ncyu.edu.tw/~s1082574/home.css">
+		<!--<link rel="stylesheet" href="style.css">-->
+		<link rel="icon" href="http://myweb.ncyu.edu.tw/~s1082574/img/logo.ico" type="image/x-icon" / >
+		<style>
+			body {
+				font-family: Arial, Helvetica, Sans-serif;
+			}
+			
+			h1, h2, h3, h4, h5, h6 { 
+				font-family: "Playfair Display"; letter-spacing: 5px;
+			}
+		</style>
+		
+	</head>
+	
+	<body>
+		
+		<div class="home-Til">
+			<div class="home-bar home-white home-padding home-card" style="letter-spacing:4px;">
+				<a href="http://myweb.ncyu.edu.tw/~s1082574/" class="home-bar-item home-button"><font size="4"><i class="fa fa-home" aria-hidden="true"></i><strong>耘の家</strong></font></a>
+				<div class="home-right home-hide-small">
+					<!--<a href="#about" class="home-bar-item home-button"><font size="4"><i class="fa-solid fa-circle-user" style="margin-right:5px"></i>關於我</font></a>
+					<a href="#home_work" class="home-bar-item home-button"><font size="4"><i class="fa-solid fa-book" style="margin-right:5px"></i>作品集</font></a>
+					<a href="#game" class="home-bar-item home-button"><font size="4"><i class="fa-solid fa-train-subway" style="margin-right:5px"></i>小火車</font></a>-->
+				</div>
+			</div>
+		</div>
+		
+		<div class="home-content" style="max-width:1100px;" >
+
+			<div class="home-row home-padding-64" id="about" >
+				<br><br><h1 class="home-center"><span style=" color: Tomato;"><i class="fa-solid fa-circle-user"></i></span><strong>1A2B</strong></h1>
+				
+				<div class="home-col m6 home-padding-large" >
+					<form name='fm' ><br>
+						<div class="btn-group" role="group" aria-label="Basic outlined example">
+							<button type="button" class="btn btn-outline-primary" onClick="javascript:doanswer(document.fm, false)">答案</button>
+							<button type="button" class="btn btn-outline-primary" onClick="javascript:doReplay(document.fm)">重新</button>
+							
+							<input type="radio" class="btn-check" name="btnradio" value="btnradio1" id="btnradio1" autocomplete="off" checked>
+							<label class="btn btn-outline-primary" for="btnradio1">首項可為0</label>
+
+							<input type="radio" class="btn-check" name="btnradio" value="btnradio2" id="btnradio2" autocomplete="off">
+							<label class="btn btn-outline-primary" for="btnradio2">首項不可為0</label>
+						</div><br><br>
+						輸入數字：<input type="number" name="Guess" size="5" maxlength="4">
+						<div class="btn-group" role="group" aria-label="Basic outlined example">
+							<button type="button" class="btn btn-outline-primary" onClick="javascript:doGuess(document.fm)">輸入</button>
+						</div>
+						<br>答案：<input type="text" name='answer' size="5" maxlength="4" style="border:0; color:red" readonly>
+						<br>記錄：
+						<br><textarea name="Hint" rows="10" readonly></textarea>
+						<span id="Check_Txt" style="color:red">時間計數：<span id="Check_i">0小時0分0秒</span></span>
+					</form>
+				</div>
+				
+				<div class="home-col m6 home-padding-large " >
+					<br><br>
+					<h5><strong>遊戲介紹</strong></h5>
+					<p class="home-large">
+						電腦會設定一組四碼的數字作為謎底，遊玩者猜。<br>
+						每猜一個數，電腦就會根據這個數字給出提示，提示以XAYB形式呈現，直到猜中為止。<br>
+						其中X表示位置正確的數的個數，而Y表示數字正確而位置不對的數的個數。<br>
+						例如，當謎底為8123，而猜謎者猜1052時，出題者必須提示0A2B。<br>
+						例如，當謎底為5637，而猜謎者猜4931時，出題者必須提示1A0B。</p><br>
+				</div>
+			</div>
+		</div>
+		
+		<script src="1a2b.js"></script>
+		
+		<noscript>抱歉，您的網頁未支援 Script，此 JavaScript 筆記網頁將無法正常執行。<hr></noscript>
+		
+	</body>
+</html>
