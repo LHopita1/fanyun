@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />  
+		<meta charset="UTF-8">
+		
+		<title>Home</title>
+		
+		<script type="text/javascript"> 
+        function practise_submit(){ 
+            if(practise.value == 0) 
+                window.location='http://myweb.ncyu.edu.tw/~s1082574/practise/0222/0222.html';
+            if(practise.value == 1) 
+                window.location='http://myweb.ncyu.edu.tw/~s1082574/practise/0301/0301.html'; 
+            if(practise.value == 2) 
+                window.location='http://myweb.ncyu.edu.tw/~s1082574/practise/0308/0308.html'; 
+        } 
+		</script> 
+		
+		<script type="text/javascript"> 
+        function homework_submit(){ 
+            if(homework.value == 101) 
+                window.location='http://myweb.ncyu.edu.tw/~s1082574/homework/change_font_img/change_font_img.html'; 
+            if(homework.value == 102) 
+                window.location='http://myweb.ncyu.edu.tw/~s1082574/homework/change_font_code/change_font_code.html'; 
+            if(homework.value == 103) 
+                window.location='http://myweb.ncyu.edu.tw/~s1082574/homework/calculus/teaching_calculus.html'; 
+			if(homework.value == 104) 
+                window.location='http://myweb.ncyu.edu.tw/~s1082574/homework/midterm/teaching_numerical_analysis.html'; 
+        } 
+		</script> 
+
+	</head>
+	
+	<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+		</script>
+	
+    <script type="text/x-mathjax-config">
+			MathJax.Hub.Config({
+					tex2jax: {
+						inlineMath: [
+							['$', '$'],
+							['\\(', '\\)']
+						]
+					}
+				});
+	</script>
+	
+	<style>
+	
+		.flex-container {
+			align-content: center;
+			display: flex;
+			flex-direction: row;
+		}
+		
+		.flex {
+			
+			display: flex;
+			height: 300px;
+			padding: 15px;
+			background-color: #7392B7;
+		}
+		
+		.item {
+			flex: 1;
+			background-color: #CCD5FF;
+			border:10px #5FBFF9 solid;
+			border-radius:10px;
+			margin: 5px;
+			//display: flex;
+			justify-content: center;
+			align-items: center;
+			//color: white;
+			//font-size: 2rem;
+		}
+		
+		.item-1 {
+			flex: 1;
+			height: 100px;
+			background-color: #CCD5FF;
+			//border:1px #5FBFF9 solid;
+			//border-radius:10px;
+			margin: 5px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			//color: white;
+			//font-size: 2rem;
+		}
+		
+		.item-2 {
+			flex: 0.5;
+			background-color: #7392B7;
+			margin: 5px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			//color: white;
+			font-size: 2rem;
+		}
+	
+	
+		div.Til{	
+			height:150px;
+			background-color: #E7BBE3;
+			border-radius:10px;
+			text-align: center;
+			line-height: 150px;
+			font-size:4vw;
+		}
+		
+		<!--
+		.blk1 {
+			width:200px;　
+			line-height:50px;　
+			padding:20px;
+			border:2px black solid;　
+			margin-right:10px;　
+			text-align: center;
+			background-color: LightCyan;
+			float:left
+		}
+		
+		.blk2 {
+			width:200px;　
+			line-height:50px;　
+			padding:20px;
+			border:2px black solid;　
+			margin-right:10px;　
+			text-align: center;
+			background-color: LightCyan;
+			float:left
+		}
+		-->
+		
+		body{
+			background-color: #7392B7;
+		}
+		
+		.cent {
+			text-align:center;
+		}
+		
+    </style>
+
+	<body>
+		
+		<h1><div class="Til">陳範耘的網站主頁</div></h1>
+		<br><br></br></br>
+		
+		<!--
+		<div class="blk1">
+			<div class="cent"><h2>上課練習:</h2></div>
+			<div class="cent"><br><a href="practise/0222/0222.html" target="_blank">0222</a></br></div>
+			<div class="cent"><br><a href="practise/0301/0301.html" target="_blank">0301</a></br></div>
+			<div class="cent"><br><a href="practise/0308/0308.html" target="_blank">0308</a></br></div>
+			
+			<select name="練習表單" id="practise"> 
+				<option selected>=== 練習 ===</option> 
+					<option value="0">0222</option> 
+					<option value="1">0301</option> 
+					<option value="2">0308</option> 
+			</select> 
+			<input type="button" id="btn" value="選擇" onclick="practise_submit(this)" /> 	
+		</div>
+		
+		<div class="blk2">
+			<div class="cent"><h2>上課作業:</h2></div>
+			<div class="cent"><br><a href="homework/change_font_img/change_font_img.html" target="_blank">字體變更(圖片)</a></br></div>
+			<div class="cent"><br><a href="homework/change_font_code/change_font_code.html" target="_blank">字體變更(程式)</a></br></div>
+			<div class="cent"><br><a href="homework/calculus/teaching_calculus.html" target="_blank">微積分教學</a></br></div>
+			<div class="cent"><br><a href="homework/midterm/teaching_linear_algebra.html" target="_blank">第六週作業</a></br></div>
+			
+			<select name="作業表單" id="homework"> 
+				<option selected>=== 作業 ===</option> 
+					<option value="101">字體變更(圖片)</option> 
+					<option value="102">字體變更(程式)</option> 
+					<option value="103">微積分教學</option>
+					<option value="104">第六週作業</option>					
+			</select> 
+			<input type="button" id="btn" value="選擇" onclick="homework_submit(this)" /> 
+		</div>
+		-->
+		
+		<div style="clear:both;"></div>
+		
+		<div class="flex">
+			
+			<div class="item-2"></div>
+			<div class="item">
+			<!--<caption>上課練習:</caption>-->
+				<div class="cent"><h2><font size="8">上課練習:</font></h2></div>
+				<div class="item-1">
+					<select name="練習表單" id="practise"> 
+						<option selected>=== 練習 ===</option> 
+						<option value="0">0222</option> 
+						<option value="1">0301</option> 
+						<option value="2">0308</option> 
+					</select>
+					<div class="cent"><input type="button" id="btn" value="選擇" onclick="practise_submit(this)" /></div> 
+				</div>
+			</div>
+			
+			<div class="item-2"></div>
+			
+			<div class="item">
+				<div class="cent"><h2><font size="8">上課作業:</font></h2></div>
+				<div class="item-1">
+					<select name="作業表單" id="homework"> 
+						<option selected>=== 作業 ===</option> 
+						<option value="101">字體變更(圖片)</option> 
+						<option value="102">字體變更(程式)</option> 
+						<option value="103">微積分教學</option>
+						<option value="104">第六週作業</option>					
+					</select>
+					<div class="cent"><input type="button" id="btn" value="選擇" onclick="homework_submit(this)" /></div> 
+				</div>
+			</div>
+			
+			<div class="item-2"></div>
+			
+		</div>
+		
+		
+	</body>
+
+</html>

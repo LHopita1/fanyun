@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		
+		<title>欸嘿</title>
+		
+		<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+		</script>
+		
+		<script type="text/x-mathjax-config">
+			MathJax.Hub.Config({
+					tex2jax: {
+						inlineMath: [
+							['$', '$'],
+							['\\(', '\\)']
+						]
+					}
+				});
+		</script>
+
+	</head>
+	
+	<link rel="stylesheet" type="text/css"
+	href="https://fonts.googleapis.com/earlyaccess/notosanstc.css"	>
+	<style>
+	h1 { font-family: "Noto Sans TC";}
+    </style>
+
+	<link rel="stylesheet" type="text/css"
+	href="https://fonts.googleapis.com/earlyaccess/cwtexming.css"	>
+	<style>
+	h2 { font-family: "cwTexMing";}
+    </style>
+
+	<link rel="stylesheet" type="text/css"
+	href="https://fonts.googleapis.com/earlyaccess/cwtexkai.css"	>
+	<style>
+	h3 { font-family: "cwTeXKai";}
+    </style>
+
+	<link rel="stylesheet" type="text/css"
+	href="https://fonts.googleapis.com/earlyaccess/cwtexyen.css"	>
+	<style>
+	h4 { font-family: "cwTeXYen";}
+    </style>
+
+	<body>
+		<h1>己虹の名言</h1>
+		<h2>己虹の名言</h2>
+		<h3>己虹の名言</h3>
+		<h4>己虹の名言</h4>
+		<p>"我，己虹，必以畢生學問開導這芸芸眾生之程式煩惱，外人以躍進式傳授，而吾，則以漸進式傳授，必能使信徒猶如醍醐灌頂、理解箇中趣味"</p>
+		
+		$$\mathbf A=
+		\begin{bmatrix}
+		a{1,1} & a{1,2} & \cdots  & a{1,n} \\
+		a{2,1} & a{2,2} & \cdots  & a{2,n} \\
+		\vdots  & \vdots  & \ddots  & \vdots  \\
+		a{m,1} & a{m,2} & \cdots  & a{m,n} \\
+		\end{bmatrix}$$
+		$$\begin{cases}a_{1,1}x_{1} + a_{1,2}x_{2} + \cdots + a_{1,n}x_{n}=  b_{1} \\
+                     a_{2,1}x_{1} + a_{2,2}x_{2} + \cdots + a_{2,n}x_{n}=  b_{2} \\
+                     \vdots \quad \quad \quad \vdots \\
+                     a_{m,1}x_{1} + a_{m,2}x_{2} + \cdots + a_{m,n}x_{n}=  b_{m} \end{cases}$$
+	</body>
+
+</html>
+

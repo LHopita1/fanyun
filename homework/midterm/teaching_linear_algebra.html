@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		
+		<title>微積分教學</title>
+		
+		<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+		</script>
+		
+		<script type="text/x-mathjax-config">
+			MathJax.Hub.Config({
+					tex2jax: {
+						inlineMath: [
+							['$', '$'],
+							['\\(', '\\)']
+						]
+					}
+				});
+		</script>
+
+	</head>
+	
+	<style>
+	
+		div.bg{
+			border: 5px solid black;
+			padding-top: 50px;
+			padding-right: 30px;
+			padding-left: 30px;
+		}
+	
+		div.Til{	
+			height:150px;
+			background-color: lightblue;
+			text-align: center;
+			line-height: 150px;
+			font-size:4vw;
+		}
+		
+		.cent{
+			text-align:center;
+		}
+		
+		.blk1 {
+			width:200px;　
+			line-height:50px;　
+			padding:20px;
+			border:2px White solid;　
+			margin-right:10px;　
+			//background: LightCyan;
+			float:left
+		}
+		
+		.blk2 {
+			width:400px;　
+			line-height:50px;　
+			padding:20px;
+			border:2px DeepSkyBlue solid;　
+			margin-right:10px;　
+			background-color: LightCyan;
+			float:left
+		}
+		
+		.thm {
+			width:400px;　
+			line-height:50px;　
+			padding:20px;
+			border:2px Red solid;　
+			margin-right:10px;　
+			background-color: LightCyan;
+			float:left
+		}
+		
+		
+    </style>
+	
+
+	<body>
+	
+		<h1><div class="Til">不負責任微積分教室</div></h1>
+		
+		<div class="bg">
+			<div class="cent"><h2><font size="6"><strong>分部積分法 &nbsp &nbsp Integration &nbsp by &nbsp Parts</strong></font></h2></div>
+			<br></br>
+			<hr></hr>
+			
+			<br>分部積分的運用很廣，特別是當被積分的函數是代數函數和超越函數相乘的情形。</br>
+			<br>例如分部積分適用於下列積分：</br>
+			<br></br>
+			<div class="blk1">
+				$$\int x\,(lnx) dx$$
+			</div>
+			<div class="blk1">
+				$$\int x^{2} e^{x}\ dx$$
+			</div>
+			<div class="blk1">
+				$$\int e^{x}\ sin(x) dx$$
+			</div>
+			<br><br></br></br>
+		
+			<br>分部積分法的原理基於乘積的導函數公式。</br>
+			<br></br>
+			<div class="blk2">
+				$$\frac{\partial }{\partial x}\,[uv]=u\frac{\partial v}{\partial x}\,+v\frac{\partial u}{\partial x}\,=uv'+vu'$$
+			</div>
+			<br><br></br></br>
+			<br>式中 $ u $ 和 $ v $ 都是 $ x $ 的可微函數。</br>
+			<br>如果 $ u' $ 和 $ v' $ 連續，我們可以將上式左右兩邊同時積分而得到</br>
+			<br></br>
+			<div class="blk2">
+				$$ uv= \int uv'\,dx+ \int vu'\,dx= \int u\,dv+ \int v\,du $$
+			</div>
+			<br><br></br></br>
+			<br>再將此方程式重組，得到下面的定理。</br>
+			<br></br>
+			<div class="thm">
+				<h4><font size="4"><strong>定理：</strong></font></h4>
+				<strong>$$ uv= \int uv'\,dx+ \int vu'\,dx= \int u\,dv+ \int v\,du $$</strong>
+			</div>
+			<br><br><br><br></br></br></br></br>
+			<br>使用分部積分時，我們可以先選取 $dv$ ，也可以先選 $u$ 。</br>
+			<br>一旦選取之後，另一個因子也隨之選定——他就必須是被積分函數的其餘部分。</br>
+			<br>同時要注意到 $dv$ 必須包含原本積分中的 $dx$ 部分。</br>
+			<br></br>
+		
+		</div>	
+	</body>
+
+</html>

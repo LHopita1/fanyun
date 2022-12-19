@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		
+		<title>數值分析教學</title>
+		
+		<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+		</script>
+		
+		<script type="text/x-mathjax-config">
+			MathJax.Hub.Config({
+					tex2jax: {
+						inlineMath: [
+							['$', '$'],
+							['\\(', '\\)']
+						]
+					}
+				});
+		</script>
+
+	</head>
+	
+	<link rel="stylesheet" type="text/css"
+	href="https://fonts.googleapis.com/earlyaccess/cwtexhei.css"	>
+	
+	<style>
+	
+		//body { font-family: "cwTeXHei";}
+		
+		div.Til{	
+			height:140px;
+			background-color: #98B9F2;
+			border-radius:10px;
+			text-align: center;
+			line-height: 140px;
+			font-size:4vw;
+		}
+		
+		.flex-container {
+			align-content: center;
+			display: flex;
+			flex-direction: row;
+		}
+		
+		
+
+		.item {
+			flex: 0.5;
+			background-color: white;
+			margin-left: 15px;
+		}
+
+		.flex-1 {
+			flex-grow: 2;
+			flex-shrink: 1;
+			flex-basis: 0%;
+			//border:2px black solid;
+			background-color: #F7F7F7;
+		}
+		
+		.cent{
+			text-align:center;
+		}
+		
+		.rig{
+			text-align:right;
+		}
+			
+		div.bg{
+			border: 5px solid black;
+			border-radius:10px;
+			padding-top: 50px;
+			padding-right: 30px;
+			padding-left: 30px;
+			padding-button: 30px;
+		}
+		
+		@media screen and (min-width:751px) { 
+			.flex {
+				display: flex;
+				//height: 300px;
+				//weight:600px;
+				padding: 15px;
+				//background-color: white;
+			}
+			div.eq {
+				//width: 300px;
+				padding: 25px;
+				padding-top: 10px;
+				margin-top: 20px;
+				margin-left: 240px;
+				box-sizing: border-box;
+				//background-color: LightGray;
+			}
+			
+			div.eq1 {
+				//width: 300px;
+				padding: 25px;
+				padding-top: 10px;
+				margin-left: 20px;
+				margin-right: 20px;
+				margin-top: 20px;
+				box-sizing: border-box;
+				//background-color: LightGray;
+			}
+			
+			div.eq2 {
+				//border: 1px solid black;
+				//width: 300px;
+				padding: 25px;
+				padding-top: 10px;
+				margin-top: 20px;
+				margin-left: 140px;
+				box-sizing: border-box;
+				//background-color: LightGray;
+			}
+		}
+		
+		@media screen and (max-width:750px) { 
+			.flex {
+				//display: flex;
+				//height: 300px;
+				//weight:600px;
+				padding: 15px;
+				//background-color: white;
+			}
+			div.eq_1 {
+				//width: 300px;
+				padding: 25px;
+				padding-top: 10px;
+				margin-top: 20px;
+				margin-left: 50px;
+				box-sizing: border-box;
+				//background-color: LightGray;
+			}
+			
+			div.eq1_1 {
+				//width: 300px;
+				padding: 25px;
+				padding-top: 10px;
+				margin-left: 20px;
+				margin-right: 20px;
+				margin-top: 20px;
+				box-sizing: border-box;
+				//background-color: LightGray;
+			}
+			
+			div.eq2_1 {
+				//border: 1px solid black;
+				//width: 300px;
+				padding: 25px;
+				padding-top: 10px;
+				margin-top: 20px;
+				margin-left: 0px;
+				box-sizing: border-box;
+				//background-color: LightGray;
+			}
+		}
+		
+		#fixed-center{
+			//background:#DDFFD9; /*背景顏色*/
+			
+			background: -webkit-radial-gradient(circle,white,#EAF9FF,#CFF2FF,#98B9F2);
+			background: -o-radial-gradient(circle,white,#EAF9FF,#CFF2FF,#98B9F2);
+			background: -moz-radial-gradient(circle,white,#EAF9FF,#CFF2FF,#98B9F2);
+			background: radial-gradient(circle,white,#EAF9FF,#CFF2FF,#98B9F2);
+			
+			color:#6C4B5E; /*文字顏色*/
+			font-weight:bold;  /*粗體字*/
+			border:3px solid #990000; /*四周邊框*/
+			border-radius:10px;
+			padding:10px; /*內距*/
+			width:200px; /*寬度*/
+			height:455px; /*高度*/
+			position:fixed; /*固定位置定位*/
+			top:41%; /*距離上方的位置*/
+			left:16%; /*距離左方的位置*/
+			margin-top:-100px; /*上方邊界*/
+			margin-left:-200px; /*左方邊界*/
+		}
+		
+		table, th, td {
+			border: 1px solid black;
+			border-radius: 10px;
+			text-align: center;
+			color:white;
+		}
+
+		.item-2 {
+			flex: 1;
+			//background-color: white;
+			margin-left: 15px;
+		}
+
+		.flex-2 {
+			flex-grow: 2;
+			flex-shrink: 1;
+			flex-basis: 0%;
+			// 請修改這三個值試試看
+			border:2px black solid;
+			background-color: white;
+		}
+
+		.item-3_1 {
+			flex: 0.25;
+			//background-color: white;
+			margin-left: 15px;
+		}
+		
+		.item-3_2 {
+			flex: 0.25;
+			//background-color: white;
+			margin-left: 15px;
+		}
+
+		.flex-3 {
+			flex-grow: 2;
+			flex-shrink: 1;
+			flex-basis: 0%;
+			// 請修改這三個值試試看
+			border:2px black solid;
+			//background-color: white;
+		}
+		
+		@media screen and (max-width:1200px) { 
+			.small-hide_1{display:none;}
+		}
+		
+		@media screen and (max-width:810px) { 
+			.small-hide_2{display:none;}
+		}
+		
+		@media screen and (max-width:520px) { 
+			.small-hide_3{display:none;}
+			.small-show_1{display:block;}			
+		}
+		
+		.small-show_1{}
+		
+		@media screen and (min-width:521px) { 
+			.small-show_1{display:none;}	
+		}
+		
+    </style>
+	
+
+	<body>
+		<h1 id="title"><div class="Til">不負責任的數值分析教學</div></h1>
+		<br></br>
+		
+		<div class="flex small-hide_2">
+			<div class="item-2"></div>
+			<div class="item-2 flex-2">
+		
+				<table style="width:100%"><div class="cent">
+					<tr style="background-color: #16BAC5">
+						<th style="width:33%;"><font size="5">應數三甲</font></th>
+						<th style="width:34%"><font size="5">陳範耘</font></th> 
+						<th style="width:33%"><font size="5">1082574</font></th>
+					</tr>
+					<tr style="background-color: #16BAC5">
+						<th colspan="3"><font size="5">Personal work 1</font></th>
+					</tr>
+				</div></table>
+				
+			</div>
+			<div class="item-2"></div>
+		</div>
+		<br></br>
+		
+		<div class="flex">
+			<div class="item"></div>
+			<div class="item flex-1">
+				<div class="bg">
+				
+					<div id="fixed-center" class="small-hide_1"><div class="cent">
+						<h2><strong><font size="6">目錄</font></strong><font size="3">點擊傳送</font></h2>
+						<form>
+							<a href="#title">
+								<input type="button" value="標題(網頁頂端)" style="width:150px;height:30px;border-radius:10px;background-color:#16BAC5;border: 1px solid #16BAC5;color: white;font-weight:bold;">
+							</a>
+							<br><br>
+							<a href="#introduction">
+								<input type="button" value="Introduction" style="width:150px;height:30px;border-radius:10px;background-color:#16BAC5;border: 1px solid #16BAC5;color: white;font-weight:bold;">
+							</a>
+							<br><br>
+							<a href="#matrices">
+								<input type="button" value="Matrices and Vectors" style="width:150px;height:30px;border-radius:10px;background-color:#16BAC5;border: 1px solid #16BAC5;color: white;font-weight:bold;">
+							</a>
+							<br><br>
+							<a href="#definition">
+								<input type="button" value="Definition" style="width:150px;height:30px;border-radius:10px;background-color:#16BAC5;border: 1px solid #16BAC5;color: white;font-weight:bold;">
+							</a>
+							<br><br>
+							<a href="#example">
+								<input type="button" value="Example" style="width:150px;height:30px;border-radius:10px;background-color:#16BAC5;border: 1px solid #16BAC5;color: white;font-weight:bold;">
+							</a>
+							<br><br>
+							<a href="#gaussian">
+								<input type="button" value="Gaussian Elimination" style="width:150px;height:30px;border-radius:10px;background-color:#16BAC5;border: 1px solid #16BAC5;color: white;font-weight:bold;">
+							</a>
+							<br><br>
+							<a href="#OC">
+								<input type="button" value="Operation Counts" style="width:150px;height:30px;border-radius:10px;background-color:#16BAC5;border: 1px solid #16BAC5;color: white;font-weight:bold;">
+							</a>
+							<br><br>
+							<a href="#exercise">
+								<input type="button" value="Exercise" style="width:150px;height:30px;border-radius:10px;background-color:#16BAC5;border: 1px solid #16BAC5;color: white;font-weight:bold;">
+							</a>
+							
+						</form>
+					</div></div>
+				
+					<div class="cent"><h2><font size="6"><strong>Linear &nbsp Systems &nbsp of &nbsp Equations</strong></font></h2></div>
+					<br></br>
+					<hr></hr>
+					
+					<br></br>
+					
+					<h3 id="introduction"><font color="DodgerBlue">Introduction </font></h3>
+					<br>We use three operations to simplify the linear system given in Linear Systems of Equations:</br>
+					<div class="eq1 eq1_1">
+						<br>1. <span style="color: #1AFFF7;"><u><span style="color: black;">Equation $ E_{i} $  can be multiplied by any nonzero constant $ λ $ </span></u></span>with the resulting 
+							equation used in place of $ E_{i} $. This operation is denoted <span style="background:#FFB0DD">($ λ E_{i} $ ) → ( $ E_{i} $ ).</span></br>
+						<br>2. <span style="color: #1AFFF7;"><u><span style="color: black;">Equation $ E_{j} $ can be multiplied by anyn constant $ λ $ and added to equation 
+							$ E_{i} $ </span></u></span>with the resulting equation used in place of $ E_{i} $. This operation is denoted 
+							<span style="background:#FFB0DD">( $ E_{i} $ + $ λ E_{j} $) → ($ E_{i} $).</span></br>
+						<br>3. <span style="color: #1AFFF7;"><u><span style="color: black;">Equations $ E_{i} $ and $ E_{j} $ can be transposed in order.</span></u></span> This operation is denoted
+							<span style="background:#FFB0DD">( $ E_{i} $ ) ↔ ( $ E_{j} $ )</span>.</br>	 
+					</div>
+					<br>By a sequence of these operations, a linear system will be systematically transformed into to a new 
+						linear system that is more easily solved and has the same solutions. The sequence of operations is 
+						illustrated in the following.</br>	 
+					<br></br>
+					<h4 id="illustration"><font color="DodgerBlue">Illustration </font></h4>
+					<br>The four equations</br>	
+					<div class="eq eq_1">					
+						<p>$ E_{1} : $ &nbsp $ x_{1} + x_{2} $ &nbsp &nbsp &nbsp &nbsp &nbsp $ + 3x_{4} = 4, $</p>
+						<p>$ E_{2} : 2x_{1} + x_{2} - x_{3} + $ &nbsp $ x_{4} = 1, $</p>
+						<p>$ E_{3} : 3x_{1} - x_{2} - x_{3} + 2x_{4} = -3, $ </p>
+						<p>$ E_{4} : -x_{1} + x_{2} +3x_{3} -x_{4} = 4, $ <div class="rig"> (6.2) </div> </p>
+					</div>
+					<br>will be solved for $ x_{1} $ , $ x_{2} $ , $ x_{3} $ , and $ x_{4} $ . We first <span style="color: #EC70FF;"><u><span style="color: black;">use equation $ E_{1} $ 
+						to eliminate the unknown $ x_{1} $ from equations $ E_{2} $, $ E_{3} $, and $ E_{4} $ </span></u></span>by performing 
+						<span style="background:#8CE2FF">($ E_{2} $ − $ 2 E_{1} $) → ($ E_{2} $),( $ E_{3} $ − $ 3 E_{1} $) → ($ E_{3} $), and ($ E_{4} $ + $ E_{1} $) → ($ E_{4} $).</span> 
+						For example, in the second equation</br>
+					<br> $$ ( E_{2} − 2 E_{1} ) → ( E_{2} ) $$ </br>
+					<br>produces</br>
+					<br> $$ (2 x_{1} + x_{2} − x_{3} + x_{4}) − 2(x_{1} + x_{2} + 3x_{4}) = 1 − 2(4). $$ </br>
+					<br>which simplifies to the result shown as $ E_{2} $ in</br>
+					<div class="eq eq_1">					
+						<p>$ E_{1} : $ &nbsp $ x_{1} + $ &nbsp $ x_{2} $ &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp $ + 3x_{4} = 4, $</p>
+						<p>$ E_{2} : $ &nbsp &nbsp &nbsp &nbsp <span style="background:#8CE2FF">$-$ &nbsp $ x_{2} -  x_{3} - 5x_{4} = -7 , $</span></p>
+						<p>$ E_{3} : $ &nbsp &nbsp &nbsp &nbsp <span style="background:#8CE2FF">$ - 4x_{2} - $ &nbsp $ x_{3} - 7x_{4} = -15, $</span></p>
+						<p>$ E_{4} : $ &nbsp &nbsp &nbsp &nbsp <span style="background:#8CE2FF">$ + 3x_{2} + 3x_{3} + 2x_{4} =  8 , $</span></p>
+					</div>
+					<br>For simplicity, the new equations are again labeled $ E_{1}, E_{2}, E_{3}, $ and $ E_{4} $.</br>
+					<br>In the new system, <span style="color: #EC70FF;"><u><span style="color: black;">$ E_{2} $ is used to eliminate the unknown $ x_{2} $ from $ E_{3} $ and $ E_{4} $</span></u></span> 
+						by performing <span style="background:#8CE2FF">$ ( E_{3} − 4 E_{2} ) → ( E_{3} ) $ and $ ( E_{4} + 3 E_{2} ) → ( E_{4} ). $ </span>This results in</br>
+					<div class="eq eq_1">					
+						<p>$ E_{1} : $ &nbsp $ x_{1} + $ &nbsp $ x_{2} $ &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp $ + 3x_{4} = $ &nbsp &nbsp $ 4, $</p>
+						<p>$ E_{2} : $ &nbsp &nbsp &nbsp &nbsp $-$ &nbsp $ x_{2} -  x_{3} - $ &nbsp $ 5x_{4} = $ &nbsp $ -7 , $</p>
+						<p>$ E_{3} : $ &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp <span style="background:#8CE2FF">$ + 3x_{3} + 13x_{4} = $ &nbsp $ 13, $</span></p>
+						<p>$ E_{4} : $ &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp <span style="background:#8CE2FF">$ - 13x_{4} =-13, $ </span><div class="rig"> (6.3) </div> </p>
+					</div>
+					<br>The system of equations (6.3) is now in <span style="background:#FFB0DD">triangular (or reduced) form</span> and can be solved
+						for the unknowns by a <span style="background:#F9B7FF">backward-substitution process.</span> Since E4 implies $ E_{4} = 1 $ , we can
+						solve $ E_{3} $ for $ x_{3} $ to give</br>
+					<div class="eq eq_1">					
+						<p>$ x_{3} = \frac{1}{3} ( 13 - 13 x_{4} ) = \frac{1}{3} ( 13 - 13 ) = 0 $</p>
+					</div>
+					<br>Continuing, $ E_{2} $ gives</br>
+					<div class="eq eq_1">					
+						<p>$ x_{2} = -( -7 + 5 x_{4} + x_{3} ) = ( -7 + 5 + 0 ) = 2 $</p>
+					</div>
+					<br>and $ E_{1} $ gives</br>
+					<div class="eq eq_1">					
+						<p>$ x_{1} = 4 - 3 x_{4} - x_{2} ) = 4 - 3 - 2 = -1 $</p>
+					</div>
+					<br>The solution to system (6.3), and consequently to system (6.2), is therefore, &nbsp $ x_{1} = −1, $ &nbsp
+						$ x_{2} = 2, $ &nbsp $ x_{3} = 0, $ &nbsp and &nbsp $ x_{4} = 1. $ </br>
+					<br><br></br></br>
+					<hr></hr>
+					<br></br>
+					<h3 id="matrices"><font color="DodgerBlue">Matrices and Vectors</font></h3>
+					<br>When performing the calculations in the Illustration, we would <span style="color: red;"><u><span style="color: black;">not need to write out the full
+						equations at each step or to carry the variables $ x_{1} $ , $ x_{2} $, $ x_{3} $, and $ x_{4} $ </span></u></span> through the calculations, if
+						they always remained in the same column. <span style="color: red;"><u><span style="color: black;">The only variation from system to system occurs
+						in the coefficients of the unknowns and in the values on the right side of the equations. </span></u></span> For
+						this reason, a linear system is often replaced by a <span style="background:#FFB0DD"><i>matrix,</i></span> which contains all the information
+						about the system that is necessary to determine its solution, but in a compact form, and one
+						that is easily represented in a computer.</br>
+					<br></br>
+					<h4 id="definition"><font color="DodgerBlue"><i>Definition</i></font></h4>
+					<br>An <span style="background:#8CE2FF"><strong><i>n</i> × <i>m</i></strong> ( <strong><i>n</i></strong> by <strong><i>m</i></strong> ) 
+						<strong>matrix</strong> </span>is a rectangular array of elements with <span style="background:#8CE2FF"><i>n</i> rows and <i>m</i> columns </span>
+						in which not only is the value of an element important, but also its position in the array.</br>
+					<br>The notation for an <i>n</i> × <i>m</i> matrix will be a <span style="color: red;"><u><span style="color: black;">capital letter</span></u></span> such as <i>A</i> for the matrix and
+						<span style="color: red;"><u><span style="color: black;">lowercase letters</span></u></span> with double subscripts, such as $ a_{ij} $, to refer to the entry at the intersection
+						of the <span style="color: red;"><u><span style="color: black;"><i>i</i>th row and <i>j</i>th column;</span></u></span> that is,</br>
+					<div class="eq eq_1">					
+						<p>$ A = [a_{ij} ]= \begin{bmatrix}
+											 a_{1,1} & a_{1,2} & \cdots  & a_{1,m} \\
+											 a_{2,1} & a_{2,2} & \cdots  & a_{2,m} \\
+											 \vdots  & \vdots  & \ddots  & \vdots  \\
+											 a_{n,1} & a_{n,2} & \cdots  & a_{n,m} \\
+											\end{bmatrix} $</p>
+					</div>
+					<h4 id="example"><font color="DodgerBlue">Example</font></h4>
+					<p>Represent the linear system</p>
+					<div class="eq eq_1">					
+						<p>$ E_{1} : $ &nbsp $ x_{1} - $ &nbsp $ x_{2} + 2x_{3} - $ &nbsp $ x_{4} = -8, $</p>
+						<p>$ E_{2} : 2x_{1} -2 x_{2} + 3x_{3} - 3x_{4} = -20, $</p>
+						<p>$ E_{3} : $ &nbsp $ x_{1} + $ &nbsp $ x_{2} + $ &nbsp $ x_{3} $ &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp $ = -2, $ </p>
+						<p>$ E_{4} : $ &nbsp $ x_{1} - $ &nbsp $ x_{2} + 4x_{3} + 3x_{4} = $ &nbsp $ 4, $ </p>
+					</div>
+					<br>as an augmented matrix and use Gaussian Elimination to find its solution.</br>
+					<h4 id="solution"><font color="DodgerBlue"><i>Solution</i></font></h4>
+					<p>The augmented matrix is</p>
+					<div class="eq eq_1">					
+						<p> <span style="background:yellow">$ \tilde{A} =  \tilde{A}^{(1)} $ </span> $= 
+							\begin{bmatrix}
+								1 & -1 & 2 & -1 & \vdots  & -8 \\
+								2 & -2 & 3 & -3 & \vdots & -20 \\
+								1 & 1 & 1 & 0 & \vdots & -2 \\
+								1 & -1 & 4 & 3 & \vdots & 4 \\
+							\end{bmatrix} $ </p>
+					</div>
+					<br>Performing the operations</br>
+					<div class="eq eq_1">					
+						<p> $ ( E_{2} − 2 E_{1} ) → ( E_{2} ), ( E_{3} − E_{1} ) → ( E_{3} ), $ 
+							and $ ( E_{4} − E_{1} ) → ( E_{4} ), $</p>
+					</div>
+					<br>gives</br>
+					<div class="eq eq_1">					
+						<p> $ \tilde{A}^{(2)} = 
+							\begin{bmatrix}
+								1 & -1 & 2 & -1 & \vdots  & -8 \\
+								0 & 0 & -1 & -1 & \vdots & -4 \\
+								0 & 2 & -1 & 1 & \vdots & 6 \\
+								0 & 0 & 2 & 4 & \vdots & 12 \\
+							\end{bmatrix} $</p>
+					</div>
+					<br> &nbsp &nbsp &nbsp The diagonal entry <span style="background:#8CE2FF">$ a_{22}^{(2)} $ </span>, called the <span style="background:yellow"><strong> pivot element,</strong></span> is 0, so the procedure cannot continue
+						in its present form. But operations <span style="background:#8CE2FF">$ ( E_{i} ) ↔ ( E_{j} ) $ are permitted,</span> so a search is made of
+						the elements $ a_{32}^{(2)} $ and $ a_{42}^{(2)} $ for the first nonzero element. Since $ a_{32}^{(2)} \neq 0 $ 
+						, the operation <span style="background:#8CE2FF">$ ( E_{2} ) ↔ ( E_{3} ) $ is performed</span> to obtain a new matrix,</br>
+					<div class="eq eq_1">					
+						<p> $ \tilde{A}^{(2)'} = 
+							\begin{bmatrix}
+								1 & -1 & 2 & -1 & \vdots  & -8 \\
+								0 & 2 & -1 & 1 & \vdots & 6 \\
+								0 & 0 & -1 & -1 & \vdots & -4 \\
+								0 & 0 & 2 & 4 & \vdots & 12 \\
+							\end{bmatrix} $</p>
+					</div>
+					<br>Since $ x_{2} $ is already eliminated from $ E_{3} $ and $ E_{4} $ , $ \tilde{A}^{(3)} $ will be 
+						$ \tilde{A}^{(2)'} $ , and the computationscontinue with the operation ( $ E_{4} $ + 2 $ E_{3} $ ) → ( $ E_{4} $ ), giving</br>
+					<div class="eq eq_1">					
+						<p> $ \tilde{A}^{(4)} = 
+							\begin{bmatrix}
+								1 & -1 & 2 & -1 & \vdots  & -8 \\
+								0 & 2 & -1 & 1 & \vdots & 6 \\
+								0 & 0 & -1 & -1 & \vdots & -4 \\
+								0 & 0 & 0 & 2 & \vdots & 4 \\
+							\end{bmatrix} $</p>
+					</div>
+					<br>Finally, the matrix is converted back into a linear system that has a solution equivalent to
+						the solution of the original system and the backward substitution is applied:</br>
+					<div class="eq eq_1">					
+						<p>$ x_{4} = \frac{4}{2} = 2 $ </p>
+						<p>$ x_{3} = \frac{[-4 - (-1) x_{4} ]}{-1} = 2 $ </p>
+						<p>$ x_{2} = \frac{[6 - x_{4} - (-1) x_{3} ]}{2} = 3 $ </p>
+						<p>$ x_{1} = \frac{[-8 - (-1) x_{4} - 2 x_{3} - (-1) x_{2} ]}{1} = -7 $ </p>
+					</div>
+					<br> &nbsp &nbsp &nbsp Example 2 illustrates what is done <span style="background:#FFB0DD">if $ a_{kk}^{(k)} = 0 $ for some $ k = 1, 2, ... , n − 1 $. The $k$th
+						column of $ \tilde{A}^{(k-1)} $ from the $k$th row to the nth row is searched for the first nonzero entry.</span> 
+						If <span style="background:#8CE2FF">$ a_{pk}^{(k)} \neq 0 $ for some $p$,with $ k + 1 ≤ p ≤ n, $ then the operation $ ( E_{k} ) ↔ ( E_{p} ) $</span> 
+						is performed to obtain $ \tilde{A}^{(k-1)'} $ . The procedure can then be continued to form $ \tilde{A}^{(k)} $, 
+						and so on. If $ a_{pk}^{(k)} = 0 $ for each $p$, it can be shown that the linear system does not
+						have a unique solution and the procedure stops. Finally, if $ a_{nn}^{(n)} = 0 $, the linear system does
+						not have a unique solution, and again the procedure stops.</br>
+					<br> &nbsp &nbsp &nbsp Algorithm Linear Systems of Equations summarizes Gaussian elimination with backward substitution. 
+						The algorithm incorporates pivoting when one of the pivots $ a_{kk}^{(k)} $ is $0$ by interchanging 
+						the $k$th row with the $p$th row, where $p$ is the smallest integer greater than $k$ for which 
+						$ a_{pk}^{(k)} \neq 0 $.</br>
+					
+					<br><br></br></br>
+					<hr></hr>
+					<h3 id="gaussian"><font color="DodgerBlue">Gaussian Elimination with Backward Substitution</font></h3>
+					<br></br>
+					<br>To solve the n × n linear system</br>
+					<div class="eq eq_1">					
+						<p>$ E_{1} : a_{11}x_{1} + a_{12}x_{2} + \cdots + a_{1n}x_{n} = a_{1,n+1}, $</p>
+						<p>$ E_{1} : a_{21}x_{1} + a_{22}x_{2} + \cdots + a_{2n}x_{n} = a_{2,n+1}, $</p>
+						<p> &nbsp $ \vdots $ &nbsp &nbsp &nbsp &nbsp $ \vdots $ &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp $ \vdots $ &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp $ \vdots $ &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp $ \vdots  $</p>
+						<p>$ E_{1} : a_{n1}x_{1} + a_{n2}x_{2} + \cdots + a_{nn}x_{n} = a_{n,n+1}, $</p>
+					</div>
+					<h4>INPUT</h4>
+					<p> &nbsp &nbsp &nbsp &nbsp number of unknowns and equations $n$; augmented <span style="background:#8CE2FF"> matrix $ A = [a_{ij}], $ where $ 1 ≤
+						i ≤ n $ and $ 1 ≤ j ≤ n + 1. $ </span></p>
+					<h4>OUTPUT</h4>
+					<p> &nbsp &nbsp &nbsp &nbsp solution $ x_{1}, x_{2}, ... , x_{n} $ or message that the linear system has no unique solution.</p>
+					<br></br>
+					<p>&nbsp &nbsp <i><strong><font size="4">Step 1</font></strong></i> 
+						&nbsp &nbsp For $ i = 1, ... , n − 1 $ do Steps $ 2–4. $ &nbsp &nbsp <i>(Elimi	nation process.)</i></p>
+					<p>&nbsp &nbsp &nbsp &nbsp &nbsp <i><strong><font size="4">Step 2</font></strong></i> 
+						&nbsp &nbsp Let $ p $ be the smallest integer with  $i ≤ p ≤ n $ and $ a_{pi} \neq $ 0.
+						<br>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp If no integer $ p $ can be found
+						<br>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp then <strong>OUTPUT</strong> (‘no unique solution exists’);
+						<br>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp <strong>STOP</strong>.</p>
+					<p>&nbsp &nbsp &nbsp &nbsp &nbsp <i><strong><font size="4">Step 3</font></strong></i> 
+						&nbsp &nbsp If $ p \neq i $ then perform $ (E_{p}) ↔ (E_{i}) $ .</p>
+					<p>&nbsp &nbsp &nbsp &nbsp &nbsp <i><strong><font size="4">Step 4</font></strong></i> 
+						&nbsp &nbsp For $ j = i + 1, ... , n $ do Steps $5$ and $6$.</p>
+					<p>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp <i><strong><font size="4">Step 5</font></strong></i> 
+						&nbsp &nbsp Set $ m_{ji} = a_{ji} / a_{ii}. $ </p>
+					<p>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp <i><strong><font size="4">Step 6</font></strong></i> 
+						&nbsp &nbsp Perform $ (E_{j} − E_{ji} E_{i}) → (E_{j}); $ </p>
+					<p>&nbsp &nbsp <i><strong><font size="4">Step 7</font></strong></i> 
+						&nbsp &nbsp If $ a_{nn} = 0 $ then <strong>OUTPUT</strong> (‘no unique solution exists’);
+						<br> &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp <strong>STOP</strong>.</p>
+					<p>&nbsp &nbsp <i><strong><font size="4">Step 8</font></strong></i> 
+						&nbsp &nbsp Set $ x_{n} = a_{n,n+1} / a_{nn}. $ (<i>Start backward substitution.</i>)</p>
+					<p>&nbsp &nbsp <i><strong><font size="4">Step 9</font></strong></i> 
+						&nbsp &nbsp For $ i = n − 1, ... , 1 &nbsp $ set $ [ a_{i,n+1} - \sum_{j=i+1}^{n} a_{ij} x_{j} ] / a_{ii} $ .</p>
+					<p>&nbsp &nbsp <i><strong><font size="4">Step 10</font></strong></i> 
+						&nbsp &nbsp OUTPUT $ ( x_{1}, ... , x_{n} ); $ (<i>Procedure completed successfully.</i>)
+						<br>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp STOP</p>
+					<h4 id="illustration-2"><font color="DodgerBlue">Illustration </font></h4>
+					<br>The purpose of this illustration is to show what can happen if Algorithm 6.1 fails. The
+						computations will be done simultaneously on two linear systems:</br>
+					<div class="eq2 eq2_1">					
+						<p>&nbsp $ x_{1} + $ &nbsp $ x_{2} + $ &nbsp $ x_{3} = 4 $ &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp $ x_{1} + $ &nbsp $ x_{2} + $ &nbsp $ x_{3} = 4 $</p>
+						<p>$ 2 x_{1} + 2 x_{2} + $ &nbsp $ x_{3} = 6 $ &nbsp &nbsp &nbsp &nbsp and &nbsp &nbsp &nbsp &nbsp $ 2 x_{1} + 2x_{2} + $ &nbsp $ x_{3} = 4 $</p>
+						<p>&nbsp $ x_{1} + $ &nbsp $ x_{2} + 2x_{3} = 6 $ &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp $ x_{1} + $ &nbsp $ x_{2} + 2 x_{3} = 6 $</p>
+					</div>
+					<br>These systems produce the augmented matrices</br>
+					<div class="eq2 eq2_1">	
+						<p>$  \tilde{A} = 
+							\begin{bmatrix}
+								 1 & 1 & 1 & \vdots & 4 \\
+								 2 & 2 & 1 & \vdots & 6 \\
+								 1 & 1 & 2 & \vdots & 6 \\
+							\end{bmatrix} $ &nbsp &nbsp &nbsp &nbsp and &nbsp &nbsp &nbsp &nbsp $
+							\tilde{A} = 
+							\begin{bmatrix}
+								 1 & 1 & 1 & \vdots & 4 \\
+								 2 & 2 & 1 & \vdots & 4 \\
+								 1 & 1 & 2 & \vdots & 6 \\
+							\end{bmatrix} $ </p>
+					</div>
+					<br>Since <span style="background:#8CE2FF"> $ a_{11} = 1, $ </span> we perform <span style="background:#8CE2FF">$ ( E_{2} − 2 E_{1}) → (E_{2}) $ and $ (E_{3} − E_{1}) → (E_{3}) $ to produce</span></br>
+					<div class="eq2 eq2_1">	
+						<p>$  \tilde{A} = 
+							\begin{bmatrix}
+								 1 & 1 & 1 & \vdots & 4 \\
+								 0 & 0 & -1 & \vdots & -2 \\
+								 0 & 0 & 1 & \vdots & 2 \\
+							\end{bmatrix} $ &nbsp &nbsp &nbsp &nbsp and &nbsp &nbsp &nbsp &nbsp $
+							\tilde{A} = 
+							\begin{bmatrix}
+								 1 & 1 & 1 & \vdots & 4 \\
+								 0 & 0 & -1 & \vdots & -4 \\
+								 0 & 0 & 1 & \vdots & 2 \\
+							\end{bmatrix} $ </p>
+					</div>
+					<br>At this point, <span style="background:#8CE2FF"> $ a_{22} = a_{32} = 0. $ </span> The algorithm requires that the procedure be halted, and no
+						solution to either system is obtained. Writing the equations for each system gives</br>
+					<div class="eq2 eq2_1">					
+						<p>$ x_{1} + $ $ x_{2} + x_{3} = 4 $ &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp $ x_{1} + x_{2} + x_{3} = 4 $</p>
+						<p> &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp $ - x_{3} = -2 $ &nbsp &nbsp &nbsp &nbsp &nbsp and &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp $ - x_{3} = -4 $</p>
+						<p> &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp $ x_{3} = 2 $ &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp $ x_{3} = 2 $</p>
+					</div>
+					<br>The first linear system has an infinite number of solutions, which can be described by $ x_{3} = 2 $ , $
+						x_{2} = 2 − x_{1} $ , and $ x_{1} $ arbitrary.</br>		
+					<br>The second system leads to the contradiction $ x_{3} $ and $ x_{3} = 4 $ , so no solution exists. In
+						each case, however, there is no <i>unique</i> solution, as we conclude from Algorithm 6.1.</br>
+					<br> &nbsp &nbsp &nbsp Although Algorithm 6.1 can be viewed as the construction of the augmented matrices 
+						$  \tilde{A}^{(1)} , ... ,  \tilde{A}^{(n)} $ , the computations can be performed in a computer using only one $ n × (n + 1) $
+						array for storage. At each step we simply replace the previous value of $ a_{ij} $ by the new one.
+						In addition, <span style="background:#8CE2FF"> we can store the multipliers $ m_{ji} $ in the locations of $ a_{ji} $ because $ a_{ji} $ has the value
+						0 for each $ i = 1, 2, ... , n − 1 $ and $ j = i + 1, i + 2, ... , n. $ </span> Thus A can be overwritten by the
+						multipliers in the entries that are below the main diagonal (that is, the entries of the form $ a_{ji} $ ,
+						with $ j > i $ ) and by the newly computed entries of $  \tilde{A}^{(n)} $ on and above the main diagonal (the
+						entries of the form $ a_{ij} $ , with $ j ≤ i $). These values can be used to solve other linear systems
+						involving the original matrix $A$, as we will see in Section 6.5. </br>
+					<br><br></br></br>
+					<hr></hr>
+					<h3 id="OC"><font color="DodgerBlue">Operation Counts</font></h3>
+					<br>Both the amount of time required to complete the calculations and the subsequent round-off
+						error depend on the number of floating-point arithmetic operations needed to solve a routine
+						problem. <span style="background:#8CE2FF"> In general, the amount of time required to perform a multiplication or division on a
+						computer is approximately the same and is considerably greater than that required to perform
+						an addition or subtraction. </span> <span style="background:#FFB0DD">The actual differences in execution time, however, depend on the
+						particular computing system. </span> To demonstrate the counting operations for a given method,
+						we will count the operations required to solve a typical linear system of $n$ equations in
+						$n$ unknowns using Algorithm 6.1. We will keep the count of the additions/subtractions
+						separate from the count of the multiplications/divisions because of the time differential.</br>
+					<br> &nbsp &nbsp &nbsp No arithmetic operations are performed until Steps 5 and 6 in the algorithm. Step
+						5 requires that $(n − i)$ divisions be performed. The replacement of the equation $ E_{j} $ by
+						$ (E_{j} − m_{ji} E_{i}) $ in Step 6 requires that $ m_{ji} $ be multiplied by each term in $ E_{i} $ , resulting in a total
+						of $ (n − i)(n − i + 1) $ multiplications. After this is completed, each term of the resulting
+						equation is subtracted from the corresponding term in $ E_{j} $ . This requires $ (n − i)(n − i + 1) $
+						subtractions. For each $ i = 1, 2, ... , n − 1 $ , the operations required in Steps 5 and 6 are as
+						follows.</br>
+					<br>
+					<h4 id="Md1"><font color="DodgerBlue">Multiplications/divisions</font></h4>
+					<p> $$ (n − i) + (n − i)(n − i + 1) = (n − i)(n − i + 2) $$ .</p>
+					<br>
+					<h4 id="As1"><font color="DodgerBlue">Additions/subtractions</font></h4>
+					<p> $$ (n − i)(n − i + 1) $$ .</p>
+					<p> &nbsp &nbsp &nbsp The total number of operations required by Steps 5 and 6 is obtained by summing the
+						operation counts for each $i$. Recalling from calculus that</p>
+					<div class="eq2 eq2_1">					
+						<p> $ \sum_{j=1}^{m} 1 = m $ , &nbsp $ \sum_{j=1}^{m} j = \frac{m(m+1)}{2} $ , &nbsp and &nbsp 
+							$ \sum_{j=1}^{m} j^{2} = \frac{m(m+1)(2m+1)}{6} $ </p>
+					</div>
+					<p>we have the following operation counts.</p>
+					<br>
+					<h4 id="Md2"><font color="DodgerBlue">Multiplications/divisions</font></h4>
+					<div class="eq2 eq2_1" >					
+						<p> $ \sum_{i=1}^{n-1} (n-i)(n-i+2) $ </p>
+						<p> $ = \sum_{i=1}^{n-1} ( n^{2} - 2ni + i^{2} + 2n - 2i) $ </p>
+						<p> $ = \sum_{i=1}^{n-1} (n-i)^{2} + 2 \sum_{i=1}^{n-1} (n-i) $ </p>
+						<p> $ = \sum_{i=1}^{n-1} i^{2} + 2 \sum_{i=1}^{n-1} i $ </p>
+						<p> $ = \frac{(n-1)n(2n-1)}{6} + 2 \frac{(n-1)n}{2} = \frac{2n^{3} + 3n^{2} - 5n}{6} $ </p>
+					</div>
+					<br>
+					<h4 id="As2"><font color="DodgerBlue">Additions/subtractions</font></h4>
+					<div class="eq2 eq2_1" >					
+						<p> $ \sum_{i=1}^{n-1} (n-i)(n-i+1) $ </p>
+						<p> $ = \sum_{i=1}^{n-1} ( n^{2} - 2ni + i^{2} + n - i) $ </p>
+						<p> $ = \sum_{i=1}^{n-1} (n-i)^{2} + \sum_{i=1}^{n-1} (n-i) $ </p> 
+						<p> $ = \sum_{i=1}^{n-1} i^{2} + \sum_{i=1}^{n-1} i $ </p>
+						<p> $ = \frac{(n-1)n(2n-1)}{6} + \frac{(n-1)n}{2} = \frac{n^{3} - n}{3} $ </p>
+					</div>
+					<p> &nbsp &nbsp &nbsp The only other steps in Algorithm 6.1 that involve arithmetic operations are those
+						required for backward substitution, Steps 8 and 9. Step 8 requires one division. Step 9
+						requires $(n − i)$ multiplications and $(n − i − 1)$ additions for each summation term and
+						then one subtraction and one division. The total number of operations in Steps 8 and 9 is
+						as follows.</p>
+					<br>
+					<h4 id="Md3"><font color="DodgerBlue">Multiplications/divisions</font></h4>
+					<div class="eq2 eq2_1" >					
+						<p> $ 1 + \sum_{i=1}^{n-1} ((n-i)+1) $ </p>
+						<p> $ = 1 + ( \sum_{i=1}^{n-1} (n-i) ) + n - 1 $ </p>
+						<p> $ 1 = n + \sum_{i=1}^{n-1} (n-i) = n + \sum_{i=1}^{n-1} i = \frac{n^{2} + n}{2} $ </p>
+					</div>
+					<br>
+					<h4 id="As3"><font color="DodgerBlue">Additions/subtractions</font></h4>
+					<div class="eq2 eq2_1">					
+						<p> $ \sum_{i=1}^{n-1} ((n-i-1)+1) = \sum_{i=1}^{n-1} (n-i) $ </p>
+						<p> $ = \sum_{i=1}^{n-1} i = \frac{n^{2} - n}{2} $ </p>
+					</div>
+					<p> &nbsp &nbsp &nbsp The total number of arithmetic operations in Algorithm 6.1 is, therefore:</p>
+					<br>
+					<h4 id="Md4"><font color="DodgerBlue">Multiplications/divisions</font></h4>				
+					<p> $$ \frac{2n^{3} + 3n^{2} - 5n}{6} + \frac{n^{2} + n}{2} = \frac{n^{3}}{3} + n^{2} - \frac{n}{3} $$ </p>
+					<br>
+					<h4 id="As4"><font color="DodgerBlue">Additions/subtractions</font></h4>
+					<p> $$ \frac{n^{3} - n}{3} + \frac{n^{2} - n}{2} = \frac{n^{3}}{3} + \frac{n^{2}}{2} - \frac{5n}{6} $$ </p>
+					<p> &nbsp &nbsp &nbsp For large $ n $, the total number of multiplications and divisions is approximately $ \frac{n^{3}}{3} $,
+						as is the total number of additions and subtractions. <span style="background:#8CE2FF"> Thus the amount of computation and
+						the time required increases with $ n $ in proportion to $ n^{3} $, </span> as shown in Table 6.1.</p>
+					<br>
+					<h4 id="table_6_1"><font color="DodgerBlue">Table 6.1</font></h4>
+					<div class="eq2 eq2_1 small-hide_3" style="justify-content: flex-start;">					
+						<p> <img src='img/table_6_1.png' alt='Table 6.1'></p>
+					</div>
+					
+					<div class="small-show_1" >
+						<p><a href="img/table_6_1.png" target="_blank">Table 6.1</a> </p>
+					</div>
+					
+					<br><br></br></br>
+					<hr></hr>
+					<h3 id="exercise"><font color="DodgerBlue">Exercise</font></h3>
+					<br>Use the Gaussian Elimination Algorithm to solve the following linear systems, 
+						if possible, and determine whether row interchanges are necessary:</br>
+					<div class="flex">
+						<div class="item-3_1"></div>
+						<div class="item-2 flex-3">
+							<p><strong>a.</strong> &nbsp &nbsp &nbsp $ x_{1} - $ &nbsp $ x_{2} + 3 x_{3} = $ &nbsp $ 2 $ </p>
+							<p> &nbsp &nbsp &nbsp &nbsp $ 3 x_{1} - 3 x_{2} - $ &nbsp $ x_{3} = -1 $ </p>
+							<p> &nbsp &nbsp &nbsp &nbsp &nbsp $ x_{1} + $ &nbsp $ x_{2} $ &nbsp &nbsp &nbsp &nbsp &nbsp $ = $ &nbsp $ 3 $ </p>
+						</div>
+						<br>
+						<div class="item-2 flex-3">
+							<p><strong>b.</strong> &nbsp &nbsp &nbsp &nbsp $ 2 x_{1} - $ &nbsp $ 1.5 x_{2} + 3 x_{3} = 1 $ </p>
+							<p> &nbsp &nbsp &nbsp &nbsp  $ - 1 x_{1} $ &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp $ + 2 x_{3} = 3 $ </p>
+							<p> &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp $ 4 x_{1} - $ &nbsp $ 4.5 x_{2} + 5 x_{3} = 1 $ </p>
+						</div>
+						<div class="item-3_2"></div>
+					</div>
+					<div class="flex">
+						<div class="item-3_1"></div>
+						<div class="item-2 flex-3">
+							<p><strong>c.</strong> &nbsp &nbsp &nbsp $ 2 x_{1} $ &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp $ = $ &nbsp $ 3 $ </p>
+							<p> &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp $ x_{1} + 1.5 x_{2} $ &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp $ = 4.5 $ </p>
+							<p> &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp $ - $ &nbsp $ 3 x_{2} + 0.5 x_{3} $ &nbsp &nbsp &nbsp &nbsp $ = -6.6 $ </p>
+							<p> &nbsp &nbsp &nbsp &nbsp &nbsp $ 2 x_{1} - $ &nbsp $ 2 x_{2} + $ &nbsp &nbsp &nbsp $ x_{3} + x_{4} = $ &nbsp $ 0.8 $ </p>
+						</div>
+						<br>
+						<div class="item-2 flex-3">
+							<p><strong>d.</strong> &nbsp &nbsp &nbsp &nbsp $ x_{1} + 1 x_{2} $ $ + $ &nbsp &nbsp &nbsp &nbsp &nbsp $ 1 x_{4} = $ &nbsp $ 2 $ </p>
+							<p> &nbsp &nbsp &nbsp &nbsp &nbsp $ 2 x_{1} $ $ + $ &nbsp $ x_{2} - 1 x_{3} + 1 x_{4} = $ &nbsp $ 1 $ </p>
+							<p> &nbsp &nbsp &nbsp &nbsp &nbsp $ 4 x_{1} - 1 x_{2} - 2 x_{3} + 2 x_{4} = $ &nbsp $ 0 $ </p>
+							<p> &nbsp &nbsp &nbsp &nbsp &nbsp $ 3 x_{1} - 1 x_{2} - 1 x_{3} + 2 x_{4} = -3 $ </p>
+						</div>
+						<div class="item-3_2"></div>
+					</div>
+					<br>
+					<details>
+						<summary>Answer</summary>
+						<p>&nbsp &nbsp &nbsp &nbsp a. &nbsp &nbsp $ x_{1} = 1.1875 $ , $ x_{2} = 1.8125 $ , $ x_{3} = 0.875 $ &nbsp  with one row interchange required</p>
+						<p>&nbsp &nbsp &nbsp &nbsp b. &nbsp &nbsp $ x_{1} = -1 $ , $ x_{2} = 0 $ , $ x_{3} = 1 $ &nbsp  with no interchange required</p>
+						<p>&nbsp &nbsp &nbsp &nbsp c. &nbsp &nbsp $ x_{1} = 1.5 $ , $ x_{2} = 2 $ , $ x_{3} = -1.2 $ , $ x_{4} = 3 $ &nbsp  with no interchange required</p>
+						<p>&nbsp &nbsp &nbsp &nbsp d. &nbsp &nbsp No unique solution</p>
+					</details>
+					<br><br><br>
+					<hr>
+					<br>
+					<h4 id="references"><font color="DodgerBlue">參考資料</font></h4>
+					<p><a href="https://faculty.ksu.edu.sa/sites/default/files/numerical_analysis_9th.pdf#page=3&zoom=auto,3,252" target="_blank">https://faculty.ksu.edu.sa/sites/default/files<br>/numerical_analysis_9th.pdf#page=3&zoom=auto,3,252</a></p>
+					<p><a href="https://web.kamihq.com/web/viewer.html?state=%7B%22ids%22%3A%5B%221lANbp1XzBkc9eMNAE80GCnV4u0ey2j6g%22%5D%2C%22action%22%3A%22open%22%2C%22userId%22%3A%22117573648543915007186%22%2C%22resourceKeys%22%3A%7B%7D%7D&kami" target="_blank">https://web.kamihq.com/web/viewer.html</a></p>
+					<br><br>
+				</div>
+			</div>
+			<div class="item"></div>
+		</div>
+		
+	</body>
+
+</html>
