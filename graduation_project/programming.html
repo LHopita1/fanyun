@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>程式執行</title>
+    <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.1.1/css/all.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="stylesheet" href="http://myweb.ncyu.edu.tw/~s1082574/home.css">
+    <link rel="stylesheet" href="http://myweb.ncyu.edu.tw/~s1082574/style.css">
+    <link rel="icon" href="img/logo.ico" type="image/x-icon" >
+    <style>
+        body {
+            font-family: Arial, Helvetica, Sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: "Playfair Display"; letter-spacing: 5px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="btn-group" style="position:fixed;z-index:10;top:10px;right:20px;">
+    <button type="button" class="btn btn-secondary dropdown-toggle" style="top:2px;right:20px;" data-bs-toggle="dropdown" aria-expanded="false">
+        Menu
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end" style="z-index:3">
+        <li><h5 class="dropdown-header content">程式執行</h5></li>
+        <li><a class="dropdown-item" href="#mod"><i class="fa-solid fa-book" style="margin-right:5px"></i>模型程式</a></li>
+        <li><a class="dropdown-item" href="#prog"><i class="fa-solid fa-book" style="margin-right:5px"></i>辨識程式</a></li>
+        <li><a class="dropdown-item" href="#content"><i class="fa-solid fa-book" style="margin-right:5px"></i>其他報告內容</a></li>
+
+    </ul>
+</div>
+
+<div class="home-Til" style="height: auto;">
+    <div class="home-bar home-white home-padding home-card" style="letter-spacing:4px;height: auto;">
+        <a href="http://myweb.ncyu.edu.tw/~s1082574/graduation_project/" class="home-bar-item home-button"><font size="4"><i class="fa fa-home" aria-hidden="true"></i><strong>畢業專題</strong></font></a>
+
+    </div>
+</div>
+
+
+<header class="home-display-container home-content home-wide home-hide-small" style="max-width:1600px;min-width:500px;" id="home" >
+    <img class="home-image" src="img/math.jpg" alt="Math" >
+    <div class="home-display-bottomleft home-padding-large home-opacity">
+
+    </div>
+</header>
+
+
+<div class="home-content" style="max-width:1100px;">
+
+    <div class="home-container home-padding-64 home-hide-small">
+        <div class=" home-padding-large">
+            <br><br>
+            <h1 class="home-center"><span style=" color: Tomato;"><i class="fa-solid fa-book"></i></span><font size="10"><strong>畢業專題：</strong></font></h1><br>
+            <h1 class="home-center"><font size="10"><strong>運用深度學習模型辨識經傅立葉處理之圖片</strong></font></h1><br>
+        </div>
+    </div>
+
+    <hr size="30" class="hr1">
+
+    <div class="home-row home-padding-64 home-hide-small">
+
+        <div class=" home-padding-large home-center" id="cnn_pro">
+            <h1 class="home-center"><strong>卷積神經網路模型程式(以2層卷積為例)</strong></h1>
+            <br><br><br>
+            <h4 class="home-center"><strong>流程圖</strong></h4>
+            <img src="img/code.png" class="home-round home-image home-opacity-min" alt="car" width="800" height="1000">
+            <br><br><br>
+            <h4 class="home-center"><strong>程式</strong></h4>
+            <textarea id="1" name="mod" rows="30" cols="80">
+            import numpy as np
+            import tensorflow as tf
+            from keras.datasets import cifar100
+            from keras.models import Sequential
+            from keras.layers import Dense
+            from keras.layers import Flatten
+            from keras.layers import Conv2D
+            from keras.layers import MaxPooling2D
+            from keras.layers import Dropout
+            from keras.utils import to_categorical
+
+            # 指定亂數種子
+            seed = 7
+            np.random.seed(seed)
+
+            #輸入資料集
+            (X_train, Y_train), (X_test, Y_test) = cifar100.load_data()
+
+            #正規化
+            X_train = X_train.astype("float32") / 255
+            X_test = X_test.astype("float32") / 255
+
+            #onehot
+            Y_train = to_categorical(Y_train)
+            Y_test = to_categorical(Y_test)
+            model = Sequential()
+
+            #Define ConV
+            model.add(Conv2D(32, kernel_size = (3, 3), padding = "same",
+                             input_shape = X_train.shape[1:], activation = "relu"))
+
+            model.add(MaxPooling2D(pool_size = (2, 2)))
+            model.add(Dropout(0.25))
+
+            model.add(Conv2D(64, kernel_size = (3, 3), padding = "same",
+                             activation = "relu"))
+
+            model.add(MaxPooling2D(pool_size = (2, 2)))
+
+            #Define Dropout, Flatten, Dense
+            model.add(Dropout(0.25))
+            model.add(Flatten())
+            model.add(Dense(512, activation = "relu"))
+            model.add(Dropout(0.5))
+            model.add(Dense(100, activation="softmax"))
+            model.summary()
+
+            #編譯
+            model.compile(loss="categorical_crossentropy",
+                          optimizer="adam", metrics=["accuracy"])
+
+            #訓練
+            history = model.fit(X_train, Y_train, validation_split= 0.2,
+                                epochs = 50, batch_size = 128, verbose = 2)
+
+            # 評估模型
+            loss, accuracy = model.evaluate(X_train, Y_train)
+            print(" 訓練資料的準確性")
+            loss, accuracy = model.evaluate(X_test, Y_test)
+            print(" 測試資料的準確性")
+
+            print("saving model: cifar100.h5...")
+            model.save("cifar100.h5")
+
+		    </textarea>
+        </div>
+    </div>
+    <div class="home-row home-padding-64 home-appear-small">
+
+        <div class=" home-padding-large home-center" id="cnn_pro">
+            <h1 class="home-center"><strong>卷積神經網路模型程式(以2層卷積為例)</strong></h1>
+            <br><br><br>
+            <h4 class="home-center"><strong>流程圖</strong></h4>
+            <img src="img/code.png" class="home-round home-image home-opacity-min" alt="car" width="800" height="1000">
+            <br><br><br>
+            <h4 class="home-center"><strong>程式</strong></h4>
+            <textarea id="2" name="mod" rows="30" cols="40">
+            import numpy as np
+            import tensorflow as tf
+            from keras.datasets import cifar100
+            from keras.models import Sequential
+            from keras.layers import Dense
+            from keras.layers import Flatten
+            from keras.layers import Conv2D
+            from keras.layers import MaxPooling2D
+            from keras.layers import Dropout
+            from keras.utils import to_categorical
+
+            # 指定亂數種子
+            seed = 7
+            np.random.seed(seed)
+
+            #輸入資料集
+            (X_train, Y_train), (X_test, Y_test) = cifar100.load_data()
+
+            #正規化
+            X_train = X_train.astype("float32") / 255
+            X_test = X_test.astype("float32") / 255
+
+            #onehot
+            Y_train = to_categorical(Y_train)
+            Y_test = to_categorical(Y_test)
+            model = Sequential()
+
+            #Define ConV
+            model.add(Conv2D(32, kernel_size = (3, 3), padding = "same",
+                             input_shape = X_train.shape[1:], activation = "relu"))
+
+            model.add(MaxPooling2D(pool_size = (2, 2)))
+            model.add(Dropout(0.25))
+
+            model.add(Conv2D(64, kernel_size = (3, 3), padding = "same",
+                             activation = "relu"))
+
+            model.add(MaxPooling2D(pool_size = (2, 2)))
+
+            #Define Dropout, Flatten, Dense
+            model.add(Dropout(0.25))
+            model.add(Flatten())
+            model.add(Dense(512, activation = "relu"))
+            model.add(Dropout(0.5))
+            model.add(Dense(100, activation="softmax"))
+            model.summary()
+
+            #編譯
+            model.compile(loss="categorical_crossentropy",
+                          optimizer="adam", metrics=["accuracy"])
+
+            #訓練
+            history = model.fit(X_train, Y_train, validation_split= 0.2,
+                                epochs = 50, batch_size = 128, verbose = 2)
+
+            # 評估模型
+            loss, accuracy = model.evaluate(X_train, Y_train)
+            print(" 訓練資料的準確性")
+            loss, accuracy = model.evaluate(X_test, Y_test)
+            print(" 測試資料的準確性")
+
+            print("saving model: cifar100.h5...")
+            model.save("cifar100.h5")
+
+		    </textarea>
+        </div>
+    </div>
+
+    <hr size="30" class="hr1">
+
+    <div class="home-row home-padding-64 home-hide-small">
+
+        <div class=" home-padding-large home-center" id="cnn_pro">
+            <h1 class="home-center"><strong>視覺辨識程式(以圖片經傅立葉轉換為例)</strong></h1>
+            <br><br><br>
+            <h4 class="home-center"><strong>流程圖</strong></h4>
+            <img src="img/code_2.png" class="home-round home-image home-opacity-min" alt="car" width="800" height="1000">
+            <br><br><br>
+            <h4 class="home-center"><strong>程式</strong></h4>
+            <textarea id="3" name="mod" rows="30" cols="80">
+            import pandas as pd
+                import tensorflow as tf
+                import numpy as np
+                import os
+                import time
+                import cv2
+
+                model = tf.compat.v1.keras.applications.vgg16.VGG16()
+                #model.summary()
+
+
+                array_of_image = []
+                array_of_image_name = []
+                column, row = 100, 3
+                show_svr = [list(range(row)) for _ in range(column)]
+
+                def read_directory(path):
+                    for filename in os.listdir(path):
+                        img = tf.keras.preprocessing.image.load_img(path + "/" + filename,
+                                                                    target_size=(224, 224))
+                        f = np.fft.fft2(img)
+                        fshift = np.fft.fftshift(f)
+                        #設定高通濾波器
+                        rows, cols = 224, 224
+                        crow,ccol = int(rows/2), int(cols/2)
+                        fshift[crow-10:crow+10, ccol-10:ccol+10] = 0
+                        #傅立葉逆變換
+                        ishift = np.fft.ifftshift(fshift)
+                        iimg = np.fft.ifft2(ishift)
+                        iimg = np.abs(iimg)
+
+                        image = tf.keras.preprocessing.image.img_to_array(iimg)
+                        image = image.reshape((1, image.shape[0], image.shape[1], image.shape[2]))
+                        image = tf.compat.v1.keras.applications.vgg16.preprocess_input(image)
+                        array_of_image.append(image)
+                        array_of_image_name.append(filename)
+
+                def predict_image(array_of_image, array_of_image_name):
+                    global show_svr
+                    svr = [list(range(3)) for _ in range(len(array_of_image))]
+                    for i in range(0, len(array_of_image)):
+                        predict2 = model.predict(array_of_image[i])
+                        label = tf.compat.v1.keras.applications.vgg16.decode_predictions(predict2)
+                        label = label[0][0]
+                        svr[i][0] = array_of_image_name[i]
+                        svr[i][1] = label[1]
+                        svr[i][2] = label[2] * 100
+                    for i in range(0, len(array_of_image)):
+                        for j in range(3):
+                            show_svr[i][j] = svr[i][j]
+
+
+                #讀取影象
+                path = "test_img"
+                read_directory(path)
+                start = time.time()
+                predict_image(array_of_image, array_of_image_name)
+                print(np.array(show_svr))
+                end = time.time()
+                print("執行時間：%f 秒" % (end - start))
+
+
+                A=np.array(show_svr)
+                data = pd.DataFrame(A)
+                writer = pd.ExcelWriter('results_ftt.xlsx')
+                data.to_excel(writer,'project_ftt2', float_format='%.5f')
+                writer.save()
+                writer.close()
+
+		    </textarea>
+        </div>
+    </div>
+    <div class="home-row home-padding-64 home-appear-small">
+
+        <div class=" home-padding-large home-center" id="cnn_pro">
+            <h1 class="home-center"><strong>視覺辨識程式(以圖片經傅立葉轉換為例)</strong></h1>
+            <br><br><br>
+            <h4 class="home-center"><strong>流程圖</strong></h4>
+            <img src="img/code_2.png" class="home-round home-image home-opacity-min" alt="car" width="800" height="1000">
+            <br><br><br>
+            <h4 class="home-center"><strong>程式</strong></h4>
+            <textarea id="4" name="mod" rows="30" cols="40">
+                import pandas as pd
+                import tensorflow as tf
+                import numpy as np
+                import os
+                import time
+                import cv2
+
+                model = tf.compat.v1.keras.applications.vgg16.VGG16()
+                #model.summary()
+
+
+                array_of_image = []
+                array_of_image_name = []
+                column, row = 100, 3
+                show_svr = [list(range(row)) for _ in range(column)]
+
+                def read_directory(path):
+                    for filename in os.listdir(path):
+                        img = tf.keras.preprocessing.image.load_img(path + "/" + filename,
+                                                                    target_size=(224, 224))
+                        f = np.fft.fft2(img)
+                        fshift = np.fft.fftshift(f)
+                        #設定高通濾波器
+                        rows, cols = 224, 224
+                        crow,ccol = int(rows/2), int(cols/2)
+                        fshift[crow-10:crow+10, ccol-10:ccol+10] = 0
+                        #傅立葉逆變換
+                        ishift = np.fft.ifftshift(fshift)
+                        iimg = np.fft.ifft2(ishift)
+                        iimg = np.abs(iimg)
+
+                        image = tf.keras.preprocessing.image.img_to_array(iimg)
+                        image = image.reshape((1, image.shape[0], image.shape[1], image.shape[2]))
+                        image = tf.compat.v1.keras.applications.vgg16.preprocess_input(image)
+                        array_of_image.append(image)
+                        array_of_image_name.append(filename)
+
+                def predict_image(array_of_image, array_of_image_name):
+                    global show_svr
+                    svr = [list(range(3)) for _ in range(len(array_of_image))]
+                    for i in range(0, len(array_of_image)):
+                        predict2 = model.predict(array_of_image[i])
+                        label = tf.compat.v1.keras.applications.vgg16.decode_predictions(predict2)
+                        label = label[0][0]
+                        svr[i][0] = array_of_image_name[i]
+                        svr[i][1] = label[1]
+                        svr[i][2] = label[2] * 100
+                    for i in range(0, len(array_of_image)):
+                        for j in range(3):
+                            show_svr[i][j] = svr[i][j]
+
+
+                #讀取影象
+                path = "test_img"
+                read_directory(path)
+                start = time.time()
+                predict_image(array_of_image, array_of_image_name)
+                print(np.array(show_svr))
+                end = time.time()
+                print("執行時間：%f 秒" % (end - start))
+
+
+                A=np.array(show_svr)
+                data = pd.DataFrame(A)
+                writer = pd.ExcelWriter('results_ftt.xlsx')
+                data.to_excel(writer,'project_ftt2', float_format='%.5f')
+                writer.save()
+                writer.close()
+
+
+		    </textarea>
+        </div>
+    </div>
+
+    <hr size="30" class="hr1">
+
+    <div class="home-container home-padding-64" id="content" >
+        <div class=" home-padding-large">
+            <h1 class="home-center"><span style=" color: Tomato;"><i class="fa-solid fa-book"></i></span>其他報告內容</h1><br>
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <div class="col">
+                    <div class="card h-100 border-dark mb-3">
+                        <img src="img/pycharm.png" class="card-img-top" alt="NN" width="260" height="194">
+                        <div class="card-body">
+                            <h4 class="card-title"><strong>使用工具及開發環境</strong></h4>
+                            <p class="card-text">介紹我們所使用的開發工具。</p>
+                            <br><br><br><br>
+                            <a href="http://myweb.ncyu.edu.tw/~s1082574/graduation_project/tool.html" class="btn btn-primary">See more</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 border-dark mb-3">
+                        <img src="img/ai.png" class="card-img-top" alt="NN" width="260" height="194">
+                        <div class="card-body">
+                            <h4 class="card-title"><strong>深度學習</strong></h4>
+                            <p class="card-text">深度學習（deep learning）是機器學習的分支，是一種以人工神經網路為架構，對資料進行表徵學習的演算法。</p>
+                            <br><br>
+                            <a href="http://myweb.ncyu.edu.tw/~s1082574/graduation_project/ai.html" class="btn btn-primary">See more</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 border-dark mb-3">
+                        <img src="img/cnn.png" class="card-img-top" alt="NN" width="260" height="194">
+                        <div class="card-body">
+                            <h4 class="card-title"><strong>卷積神經網路</strong></h4>
+                            <p class="card-text">卷積神經網路（Convolutional Neural Networks，CNN）又被稱為 CNNs 或 ConvNets，它是目前深度神經網路（deep neural network）領域的發展主力。</p>
+                            <br>
+                            <a href="http://myweb.ncyu.edu.tw/~s1082574/graduation_project/cnn.html" class="btn btn-primary">See more</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 border-dark mb-3">
+                        <img src="img/ft.png" class="card-img-top" alt="NN" width="260" height="194">
+                        <div class="card-body">
+                            <h4 class="card-title"><strong>傅立葉轉換</strong></h4>
+                            <p class="card-text">傅立葉轉換可將一個時域訊號，轉換到頻域上去。不管這個訊號是以時域的方式表現，還是以頻域的方式表現出來，指的都是同一個訊號。</p>
+                            <br>
+                            <a href="http://myweb.ncyu.edu.tw/~s1082574/graduation_project/ft.html" class="btn btn-primary">See more</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 border-dark mb-3">
+                        <img src="img/code.png" class="card-img-top" alt="NN" width="260" height="194">
+                        <div class="card-body">
+                            <h4 class="card-title"><strong>程式執行</strong></h4>
+                            <p class="card-text">我們將分成模型訓練及主程式兩個部分講解。</p>
+                            <br><br><br>
+                            <a href="http://myweb.ncyu.edu.tw/~s1082574/graduation_project/programming.html" class="btn btn-primary disabled">See more</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 border-dark mb-3">
+                        <img src="img/result.png" class="card-img-top" alt="NN" width="260" height="194">
+                        <div class="card-body">
+                            <h4 class="card-title"><strong>結果分析</strong></h4>
+                            <p class="card-text">我們將使用Python輸出結果，並直接生成Excel檔儲存結果，以利進行數據分析。</p>
+                            <br><br><br>
+                            <a href="http://myweb.ncyu.edu.tw/~s1082574/graduation_project/result.html" class="btn btn-primary">See more</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+<footer class="home-center home-light-grey home-padding-32">
+
+    <p class="cent">
+    <div id="sidebar">
+        <a href="http://www.ncyu.edu.tw/NewSite/" style="text-decoration:none;" target="_blank" title="就讀學校">國立嘉義大學</a> &nbsp
+        <a href="https://www.ncyu.edu.tw/math/" style="text-decoration:none;" target="_blank" title="就讀學系">應用數學系</a>
+        <font style="color:#9B9B9B; margin-left:20px;"> © 2022  陳範耘 </font>
+    </div>
+    </p>
+</footer>
+
+<button class="go_top hidden" onclick="Go_Back_Top()"><i class="fa-solid fa-arrow-up"></i></button>
+<div class="Easter-frame"></div>
+
+<script src="go_til.js"></script>
+<script src="link.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+
+</body>
+</html>

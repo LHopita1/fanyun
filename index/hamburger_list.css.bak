@@ -1,0 +1,43 @@
+/* reset */
+.burgar_menu { margin: 0; }
+
+* { box-sizing: border-box; }
+
+.burgar_menu {
+	list-style: none; 
+	padding-left: 0; 
+}
+
+.burgar_list {
+	text-decoration: none;
+}
+
+.burger_check {
+  display: none;
+}
+
+/* 漢堡按鈕 */
+.burgar_btn {
+	float: right;
+	padding-right: 50px;
+	line-height: 50px;
+}
+
+/* 選單列 */
+.burgar_menu {
+	clear: both;
+	background: #fff;
+	max-height: 0;
+	overflow: hidden;
+	transition: .5s;
+	.burgar_li {
+		text-align: center;
+		border-bottom: 1px solid #efefef;
+		.burgar_list {
+			display: block;
+			padding: 10px 0;
+			font-size: 18px;
+			color: #5d5d5d;		
+		}
+	}
+}

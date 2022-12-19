@@ -1,0 +1,39 @@
+const Top_pixel = 50
+
+window.onscroll = function() {
+    if (document.body.scrollTop > Top_pixel || document.documentElement.scrollTop > Top_pixel)
+        document.querySelector(".go_top").classList.remove("hidden")
+    else
+        document.querySelector(".go_top").classList.add("hidden")
+}
+
+function Go_Back_Top() {
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+}
+
+var toggle = document.querySelectorAll('.toggle');
+var target = document.querySelectorAll('.target');
+
+var goWeb_btn = document.querySelector('.goWeb');
+var miniWindows = document.querySelector('.miniWindows');
+
+var Easter_eggs = document.querySelector('.Easter-eggs');
+var Easter_frame = document.querySelector('.Easter-frame');
+
+toggle.forEach(element => {
+    element.onclick = function(){
+        this.classList.toggle('active')
+    }
+});
+target.forEach(element => {
+    element.onclick = function(){
+        goWeb_btn.classList.remove('hidden')
+        miniWindows.src = this.id
+        goWeb_btn.href = this.id
+    }
+});
+
+Easter_eggs.onclick = function(){
+    Easter_frame.classList.add('active')
+}
