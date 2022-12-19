@@ -113,7 +113,7 @@ body {
 
 .box h4 {
   color: hsl(0, 0%, 12%);
-  font-size: 500;
+  font-size:500px;
 }
 
 .box .percent {
@@ -189,7 +189,7 @@ span.squ {
 }
 
 #sidebar a:link,
-#sidebar a:visiteid {
+#sidebar a:visited{
 	color:#000000;
 	text-decoration:none;
 }
@@ -206,7 +206,7 @@ height: 400px;
 }
 
 .bg-info{--bs-bg-opacity:1;background-color:rgba(var(--bs-info-rgb),var(--bs-bg-opacity))!important}
-//progress{vertical-align:baseline}[hidden]{display:none!important}
+progress{vertical-align:baseline}[hidden]{display:none!important}
 @-webkit-keyframes progress-bar-stripes{0%{background-position-x:1rem}}
 @keyframes progress-bar-stripes{0%{background-position-x:1rem}}
 .progress{display:flex;height:1rem;overflow:hidden;font-size:.75rem;background-color:#e9ecef;border-radius:.25rem}
