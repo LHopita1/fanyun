@@ -18,18 +18,16 @@ h6 {
 	padding: 20px;
 	padding-bottom: 40px;
 	padding-top: 0px;
-	//background-color: #7392B7;
+
 	flex-direction: column;
 }
 
 .item {
 	flex: 2;
 	background-color: #CCD5FF;
-	//height:200px;
 	border: 10px #5FBFF9 solid;
 	border-radius: 10px;
 	margin: 5px 100px 5px 100px;
-	//display: flex;
 	justify-content: center;
 	align-items: center;
 }
@@ -40,7 +38,6 @@ h6 {
 	border: 10px #5FBFF9 solid;
 	border-radius: 10px;
 	margin: 5px 5px 5px 5px;
-	//display: flex;
 	justify-content: center;
 	align-items: center;
 }
@@ -48,18 +45,14 @@ h6 {
 .item_1 {
 	flex: 2;
 	background-color: #ece8ef;
-	//border:10px #5FBFF9 solid;
 	border-radius: 10px;
 	margin: 5px 5px 5px 5px;
-	//display: flex;
 	justify-content: center;
 	align-items: center;
 }
 
 .item-1 {
 	flex: 1;
-	//background-color: #CCD5FF;
-	//border:1px #5FBFF9 solid;
 	margin: 5px;
 	display: flex;
 	flex-direction: column;
@@ -68,7 +61,7 @@ h6 {
 }
 
 .item-1_1 {
-	//border:1px red solid;
+
 	margin: 5px;
 	display: flex;
 	flex-direction: row;
@@ -78,7 +71,7 @@ h6 {
 
 .item-2 {
 	flex: 0.5;
-	//background-color: blue;
+
 	margin: 5px;
 	display: flex;
 	justify-content: center;
