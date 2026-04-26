@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>耘の家-日本花火大會</title>
+
+  <!-- 載入 Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- 載入 React 核心庫 -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+  <!-- 載入 Babel 編譯器，讓瀏覽器能即時看懂 JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="icon" href="img/fireworks.ico" type="image/x-icon">
+</head>
+<body class="bg-[#0B1021]">
+<!-- React 應用程式的掛載點 -->
+<div id="root"></div>
+
+<!-- 注意 type 要設定為 text/babel -->
+<script type="text/babel">
+  const { useState, useEffect, useMemo } = React;
+
+  // --- 圖示元件 (取代原本的 lucide-react) ---
+  const IconSvg = ({ children, className }) => (
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            {children}
+          </svg>
+  );
+  const MapPin = ({ className }) => <IconSvg className={className}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></IconSvg>;
+  const Calendar = ({ className }) => <IconSvg className={className}><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></IconSvg>;
+  const Train = ({ className }) => <IconSvg className={className}><rect x="4" y="3" width="16" height="16" rx="2"></rect><path d="M4 11h16"></path><path d="M12 3v8"></path><path d="M8 19l-2 3"></path><path d="M16 19l2 3"></path><path d="M8 15h.01"></path><path d="M16 15h.01"></path></IconSvg>;
+  const Info = ({ className }) => <IconSvg className={className}><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></IconSvg>;
+  const ArrowLeft = ({ className }) => <IconSvg className={className}><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></IconSvg>;
+  const Star = ({ className }) => <IconSvg className={className}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></IconSvg>;
+  const Camera = ({ className }) => <IconSvg className={className}><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></IconSvg>;
+  const X = ({ className }) => <IconSvg className={className}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></IconSvg>;
+
+  // --- 資料庫 (Data Source) ---
+  const rawFestivalsData = [
+    { name: "海洋博公園花火大會", pref: "沖繩縣", date: "7/4", region: "沖繩" },
+    { name: "真駒內花火大會", pref: "北海道", date: "7/11", region: "北海道" },
+    { name: "伊勢神宮奉納全國花火大會", pref: "三重縣", date: "7/18", region: "近畿" },
+    { name: "能代煙火大會", pref: "秋田縣", date: "7/18", region: "東北" },
+    { name: "熱海海上花火大會", pref: "靜岡縣", date: "7/20、7/26、8/5、8/9、8/18、8/24、9/13、10/12、10/25、11/8、11/23、12/6、12/25", region: "中部" },
+    { name: "尾道住吉花火祭", pref: "廣島縣", date: "7/25", region: "中國" },
+    { name: "隅田川花火大會", pref: "東京都", date: "7/25", region: "關東" },
+    { name: "天神祭奉納花火", pref: "大阪府", date: "7/25", region: "近畿" },
+    { name: "袋井遠州花火", pref: "靜岡縣", date: "7/25", region: "中部" },
+    { name: "安倍川花火大會", pref: "靜岡縣", date: "7/18", region: "中部" },
+    { name: "豐田OIDEN祭煙火大會", pref: "愛知縣", date: "7/26", region: "中部" },
+    { name: "祇園柏崎祭海上花火大會", pref: "新潟縣", date: "7/26", region: "中部" },
+    { name: "道新・UHB煙火大會", pref: "北海道", date: "7/31", region: "北海道" },
+    { name: "幕張海灘花火節", pref: "千葉縣", date: "8/1", region: "關東" },
+    { name: "江戶川區花火大會", pref: "東京都", date: "8/1", region: "關東" },
+    { name: "岡崎城下家康公夏日祭花火大會", pref: "愛知縣", date: "8/1", region: "中部" },
+    { name: "北國大花火川北大会", pref: "石川縣", date: "8/1", region: "中部" },
+    { name: "足利花火大會", pref: "栃木縣", date: "8/1", region: "關東" },
+    { name: "古河花火大會", pref: "茨城縣", date: "8/1", region: "關東" },
+    { name: "松江水鄉祭湖上花火大會", pref: "島根縣", date: "8/1-2", region: "中國" },
+    { name: "長岡祭大花火大會", pref: "新潟縣", date: "8/2-3", region: "中部" },
+    { name: "筑後川花火大會", pref: "福岡縣", date: "8/5", region: "九州" },
+    { name: "仙台七夕花火祭", pref: "宮城縣", date: "8/5", region: "東北" },
+    { name: "琵琶湖大花火大會", pref: "滋賀縣", date: "8/6", region: "近畿" },
+    { name: "青森花火大會", pref: "青森縣", date: "8/7", region: "東北" },
+    { name: "長良川花火大會", pref: "岐阜縣", date: "8/8", region: "中部" },
+    { name: "保津川花火大會", pref: "京都府", date: "8/11", region: "近畿" },
+    { name: "勝每花火大會", pref: "北海道", date: "8/13", region: "北海道" },
+    { name: "關門海峽花火大會", pref: "山口縣", date: "8/13", region: "中國" },
+    { name: "讚岐高松祭花火大會", pref: "香川縣", date: "8/13", region: "四國" },
+    { name: "福山夏日祭蘆田川花火大會", pref: "廣島縣", date: "8/15", region: "中國" },
+    { name: "赤川花火大會", pref: "山形縣", date: "8/15", region: "東北" },
+    { name: "諏訪湖祭湖上花火大會", pref: "長野縣", date: "8/15", region: "中部" },
+    { name: "宮津燈籠流放花火大會", pref: "京都府", date: "8/16", region: "近畿" },
+    { name: "熊野大花火大會", pref: "三重縣", date: "8/17", region: "近畿" },
+    { name: "全國花火競技大會(大曲花火)", pref: "秋田縣", date: "8/29", region: "東北" },
+    { name: "北海道藝術花火大會", pref: "北海道", date: "9/5", region: "北海道" },
+    { name: "酒田花火大會", pref: "山形縣", date: "9/12", region: "東北" },
+    { name: "片貝煙火大會", pref: "新潟縣", date: "9/12-13", region: "中部" },
+    { name: "姬路港祭海上花火大會", pref: "兵庫縣", date: "9/20", region: "近畿" },
+    { name: "浪速淀川花火大會", pref: "大阪府", date: "10/17", region: "近畿" },
+    { name: "八代全國花火競技大會", pref: "熊本縣", date: "10/17", region: "九州" },
+    { name: "多摩川花火大會", pref: "神奈川縣", date: "10/3", region: "關東" },
+    { name: "東京灣大花火祭", pref: "東京都", date: "10/24", region: "關東" },
+    { name: "土浦全國花火競技大會", pref: "茨城縣", date: "11/7", region: "關東" },
+    { name: "秩父夜祭花火大會", pref: "埼玉縣", date: "12/3", region: "關東" }
+  ];
+
+  const generateDetail = (festival) => ({
+    ...festival,
+    id: festival.name,
+    sortValue: parseInt(festival.date.split('、')[0].split('-')[0].replace('/', '')),
+    details: {
+      intro: `2026年於${festival.pref}盛大舉辦的「${festival.name}」，是當地年度最重要的盛事之一。當夜幕低垂，數以萬計的璀璨煙火將在夜空中綻放，將黑夜點亮如白晝。這不僅是一場視覺饗宴，更是感受日本傳統夏日祭典熱情與活力的絕佳機會。`,
+      history: `${festival.name}擁有深厚的歷史底蘊。最初的舉辦往往與慰靈、祈福或慶祝當地豐收有關。隨著時間的推移，它逐漸演變成凝聚地方向心力、展現當地煙火職人精湛工藝的競技舞台。`,
+      features: `來到${festival.name}，您絕對不能錯過其獨特的「尺玉」連發或是結合現代音樂的「音樂花火」。其特有的施放地形讓煙火的聲響產生震撼的共鳴。此外，壓軸的大型連續煙火（Star Mine）將夜空完全覆蓋，是整個大會的最高潮。`,
+      location: `日本 ${festival.region}地區 ${festival.pref} 境內特設會場`,
+      transport: `建議搭乘大眾運輸工具前往。可搭乘 JR 或當地私鐵至${festival.pref}主要車站後，轉乘大會提供的臨時接駁巴士或步行前往會場。舉辦當日周邊會實施嚴格的交通管制，強烈不建議自行開車。`,
+      attractions: [
+        { name: `${festival.pref}傳統老街`, desc: `保留了江戶時代風貌的街道，適合在花火大會前穿著浴衣漫步，品嚐當地小吃。` },
+        { name: `當地著名神社/寺廟`, desc: `歷史悠久的信仰中心，您可以前往祈求平安，並欣賞壯麗的傳統建築。` },
+        { name: `${festival.pref}自然景觀公園`, desc: `擁有豐富自然生態的公園，白天可在這裡放鬆身心。` }
+      ]
+    }
+  });
+
+  const festivals = rawFestivalsData.map(generateDetail);
+
+  const regionsMap = [
+    { id: "北海道", name: "北海道", color: "from-cyan-600 to-blue-800", col: "col-start-3", row: "row-start-1" },
+    { id: "東北", name: "東北", color: "from-blue-500 to-indigo-800", col: "col-start-3", row: "row-start-2" },
+    { id: "關東", name: "關東", color: "from-indigo-500 to-purple-800", col: "col-start-3", row: "row-start-3" },
+    { id: "中部", name: "中部", color: "from-sky-500 to-blue-700", col: "col-start-2", row: "row-start-3" },
+    { id: "近畿", name: "近畿", color: "from-blue-400 to-indigo-600", col: "col-start-1", row: "row-start-3" },
+    { id: "中國", name: "中國", color: "from-cyan-500 to-blue-600", col: "col-start-1", row: "row-start-4" },
+    { id: "四國", name: "四國", color: "from-teal-500 to-cyan-700", col: "col-start-2", row: "row-start-4" },
+    { id: "九州", name: "九州", color: "from-blue-600 to-indigo-800", col: "col-start-1", row: "row-start-5" },
+    { id: "沖繩", name: "沖繩", color: "from-sky-400 to-blue-600", col: "col-start-1", row: "row-start-6" },
+  ];
+
+  const FireworksBackground = () => (
+          <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+            <div className="absolute top-[10%] left-[20%] w-2 h-2 bg-blue-300 rounded-full shadow-[0_0_20px_10px_rgba(147,197,253,0.5)] animate-pulse"></div>
+            <div className="absolute top-[30%] right-[25%] w-3 h-3 bg-yellow-200 rounded-full shadow-[0_0_30px_15px_rgba(253,224,71,0.5)] animate-bounce" style={{animationDuration: '3s'}}></div>
+            <div className="absolute top-[50%] left-[60%] w-1.5 h-1.5 bg-cyan-300 rounded-full shadow-[0_0_15px_8px_rgba(103,232,249,0.5)] animate-ping" style={{animationDuration: '4s'}}></div>
+            <div className="absolute bottom-[20%] right-[10%] w-2.5 h-2.5 bg-purple-300 rounded-full shadow-[0_0_25px_12px_rgba(216,180,254,0.5)] animate-pulse" style={{animationDuration: '2.5s'}}></div>
+          </div>
+  );
+
+  const JapanMap = ({ onRegionClick }) => {
+    return (
+            <div className="w-full max-w-2xl mx-auto p-4 md:p-8 bg-slate-800/50 rounded-2xl backdrop-blur-sm border border-slate-700 shadow-2xl relative z-20">
+              <h3 className="text-xl md:text-2xl text-center text-blue-200 font-bold mb-6 tracking-widest">點擊地區探索花火大會</h3>
+              <div className="grid grid-cols-3 gap-2 md:gap-4 max-w-md mx-auto">
+                {regionsMap.map((region) => (
+                        <button
+                                key={region.id}
+                                onClick={() => onRegionClick(region.id)}
+                                className={`${region.col} ${region.row} relative group overflow-hidden rounded-xl bg-gradient-to-br ${region.color} p-4 md:p-6 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(59,130,246,0.6)] border border-white/10 cursor-pointer`}
+                        >
+                          <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300 pointer-events-none"></div>
+                          <span className="relative z-10 block text-center text-white font-bold text-lg md:text-xl text-shadow-sm pointer-events-none">
+                  {region.name}
+                </span>
+                        </button>
+                ))}
+              </div>
+            </div>
+    );
+  };
+
+  const RegionModal = ({ region, isOpen, onClose, onSelectFestival }) => {
+    if (!isOpen) return null;
+    const regionFestivals = festivals.filter(f => f.region === region).sort((a, b) => a.sortValue - b.sortValue);
+
+    return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-opacity">
+              <div className="bg-slate-900 border border-blue-500/30 rounded-2xl w-full max-w-lg overflow-hidden shadow-[0_0_40px_rgba(30,64,138,0.5)] relative">
+                <div className="flex justify-between items-center p-4 md:p-6 border-b border-slate-800 bg-slate-800/50">
+                  <h2 className="text-2xl font-bold text-blue-300 flex items-center gap-2">
+                    <MapPin className="w-6 h-6" /> {region}地區 花火大會
+                  </h2>
+                  <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors p-1 bg-slate-800 rounded-full hover:bg-slate-700 cursor-pointer">
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+
+                <div className="max-h-[60vh] overflow-y-auto p-2">
+                  {regionFestivals.length > 0 ? (
+                          <div className="flex flex-col gap-2 p-2">
+                            {regionFestivals.map((fest, idx) => (
+                                    <button key={idx} onClick={() => onSelectFestival(fest)} className="flex items-center justify-between w-full p-4 rounded-xl text-left bg-slate-800/50 hover:bg-blue-900/40 border border-slate-700 hover:border-blue-400 transition-all group cursor-pointer">
+                                      <div className="flex-1">
+                                        <h3 className="text-lg font-bold text-blue-100 group-hover:text-white transition-colors">{fest.name}</h3>
+                                        <p className="text-sm text-slate-400 mt-1">{fest.pref}</p>
+                                      </div>
+                                      <div className="flex flex-col items-end shrink-0">
+                        <span className="flex items-center gap-1 text-blue-300 font-mono font-medium">
+                          <Calendar className="w-4 h-4" /> {fest.date}
+                        </span>
+                                        <span className="text-xs text-blue-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">查看詳情 &rarr;</span>
+                                      </div>
+                                    </button>
+                            ))}
+                          </div>
+                  ) : (
+                          <div className="p-8 text-center text-slate-400">該地區尚未登錄資訊</div>
+                  )}
+                </div>
+              </div>
+            </div>
+    );
+  };
+
+  const FestivalDetailView = ({ festival, onBack, onRegionClick }) => {
+    if (!festival) return null;
+    const { details } = festival;
+
+    return (
+            <div className="w-full max-w-5xl mx-auto pb-20 relative z-10 transition-all duration-500">
+              <button onClick={onBack} className="mb-6 flex items-center gap-2 text-blue-400 hover:text-blue-200 transition-colors font-medium bg-slate-800/50 px-4 py-2 rounded-lg backdrop-blur-sm border border-slate-700 w-fit cursor-pointer">
+                <ArrowLeft className="w-5 h-5" /> 返回首頁
+              </button>
+
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 border border-blue-500/20 p-8 md:p-12 mb-8 shadow-2xl">
+                <div className="absolute top-0 right-0 p-8 opacity-10">
+                  <Star className="w-64 h-64 text-blue-400" />
+                </div>
+                <div className="relative z-10">
+                  <div className="flex flex-wrap gap-3 mb-4">
+                    <span className="px-3 py-1 bg-blue-600/30 text-blue-300 border border-blue-500/50 rounded-full text-sm font-medium">{festival.region}</span>
+                    <span className="px-3 py-1 bg-indigo-600/30 text-indigo-300 border border-indigo-500/50 rounded-full text-sm font-medium">{festival.pref}</span>
+                    <span className="px-3 py-1 bg-cyan-600/30 text-cyan-300 border border-cyan-500/50 rounded-full text-sm font-medium flex items-center gap-1">
+                  <Calendar className="w-4 h-4" /> {festival.date}
+                </span>
+                  </div>
+                  <h1 className="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-100 to-indigo-300 mb-6">{festival.name}</h1>
+                  <p className="text-lg md:text-xl text-slate-300 leading-relaxed max-w-3xl">{details.intro}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="bg-slate-800/60 rounded-2xl p-6 border border-slate-700 backdrop-blur-sm">
+                  <h3 className="text-xl font-bold text-blue-300 mb-4 flex items-center gap-2"><Info className="w-6 h-6 text-indigo-400" />歷史與意義</h3>
+                  <p className="text-slate-300 leading-relaxed">{details.history}</p>
+                </div>
+                <div className="bg-slate-800/60 rounded-2xl p-6 border border-slate-700 backdrop-blur-sm">
+                  <h3 className="text-xl font-bold text-blue-300 mb-4 flex items-center gap-2"><Star className="w-6 h-6 text-yellow-400" />必看特點</h3>
+                  <p className="text-slate-300 leading-relaxed">{details.features}</p>
+                </div>
+                <div className="bg-slate-800/60 rounded-2xl p-6 border border-slate-700 backdrop-blur-sm">
+                  <h3 className="text-xl font-bold text-blue-300 mb-4 flex items-center gap-2"><MapPin className="w-6 h-6 text-red-400" />舉辦地點</h3>
+                  <p className="text-slate-300 leading-relaxed">{details.location}</p>
+                </div>
+                <div className="bg-slate-800/60 rounded-2xl p-6 border border-slate-700 backdrop-blur-sm">
+                  <h3 className="text-xl font-bold text-blue-300 mb-4 flex items-center gap-2"><Train className="w-6 h-6 text-emerald-400" />交通方式</h3>
+                  <p className="text-slate-300 leading-relaxed">{details.transport}</p>
+                </div>
+              </div>
+
+              <div className="bg-slate-800/60 rounded-2xl p-6 md:p-8 border border-slate-700 backdrop-blur-sm mb-16">
+                <h3 className="text-2xl font-bold text-blue-300 mb-6 flex items-center gap-2"><Camera className="w-7 h-7 text-pink-400" />周邊推薦景點</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {details.attractions.map((attr, idx) => (
+                          <div key={idx} className="bg-slate-900/50 p-5 rounded-xl border border-slate-700">
+                            <h4 className="text-lg font-bold text-blue-200 mb-2">{attr.name}</h4>
+                            <p className="text-sm text-slate-400 leading-relaxed">{attr.desc}</p>
+                          </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-12 border-t border-slate-800">
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl font-bold text-slate-300">繼續探索其他地區</h2>
+                </div>
+                <JapanMap onRegionClick={onRegionClick} />
+                <div className="text-center mt-8">
+                  <button onClick={onBack} className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-all hover:scale-105 cursor-pointer">
+                    回到首頁
+                  </button>
+                </div>
+              </div>
+            </div>
+    );
+  };
+
+  function App() {
+    const [view, setView] = useState('home');
+    const [selectedFestival, setSelectedFestival] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [activeRegion, setActiveRegion] = useState(null);
+
+    const handleRegionClick = (regionId) => {
+      setActiveRegion(regionId);
+      setIsModalOpen(true);
+    };
+
+    const handleSelectFestival = (festival) => {
+      setSelectedFestival(festival);
+      setIsModalOpen(false);
+      setView('detail');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleBackToHome = () => {
+      setView('home');
+      setSelectedFestival(null);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    return (
+            <div className="min-h-screen bg-[#0B1021] text-slate-200 font-sans selection:bg-blue-500/30">
+              <FireworksBackground />
+              <nav className="sticky top-0 z-40 bg-[#0B1021]/80 backdrop-blur-md border-b border-slate-800">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="flex items-center justify-center h-16 md:h-20">
+                    <button onClick={handleBackToHome} className="flex items-center gap-3 group cursor-pointer">
+                      <Star className="w-8 h-8 text-blue-500 group-hover:text-blue-400 transition-colors duration-300" />
+                      <span className="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300 tracking-wider">
+                    2026日本花火大會推薦
+                  </span>
+                    </button>
+                  </div>
+                </div>
+              </nav>
+
+              <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+                {view === 'home' && (
+                        <div className="space-y-16">
+                          <section className="text-center space-y-6 mt-4 relative z-20">
+                            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight drop-shadow-md">點亮夏日夜空的璀璨祭典</h1>
+                            <p className="text-lg md:text-xl text-blue-200 max-w-2xl mx-auto font-light leading-relaxed">
+                              收錄全日本從北到南最受矚目的花火大會。透過地圖探索，規劃您的 2026 日本仲夏夜之旅。
+                            </p>
+                          </section>
+                          <section>
+                            <JapanMap onRegionClick={handleRegionClick} />
+                          </section>
+                          <section className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto mt-12 relative z-20">
+                            <div className="bg-gradient-to-br from-slate-800/80 to-slate-900 p-8 rounded-3xl border border-slate-700 shadow-xl">
+                              <h2 className="text-2xl font-bold text-blue-300 mb-4 flex items-center gap-2"><Star className="w-6 h-6" /> 花火大會的由來</h2>
+                              <p className="text-slate-300 leading-loose">
+                                日本的花火大會起源可追溯至江戶時代。最初多為祭祀水神、慰留亡靈或祈求驅除瘟疫的宗教儀式，其中最著名的「隅田川花火大會」前身即是為了祭奠大飢荒與霍亂死者而舉辦的「兩國川開」。時至今日，花火大會已成為日本夏日最具代表性的風物詩。
+                              </p>
+                            </div>
+                            <div className="bg-gradient-to-br from-slate-800/80 to-slate-900 p-8 rounded-3xl border border-slate-700 shadow-xl">
+                              <h2 className="text-2xl font-bold text-blue-300 mb-4 flex items-center gap-2"><Info className="w-6 h-6" /> 觀賞注意事項</h2>
+                              <ul className="space-y-4 text-slate-300">
+                                <li className="flex gap-3"><span className="text-blue-400 font-bold">1.</span><p><strong>提早卡位：</strong> 知名大會人潮眾多，建議提早抵達現場。</p></li>
+                                <li className="flex gap-3"><span className="text-blue-400 font-bold">2.</span><p><strong>交通規劃：</strong> 車站常會極度壅塞，建議先買好回程車票。</p></li>
+                                <li className="flex gap-3"><span className="text-blue-400 font-bold">3.</span><p><strong>防蚊與消暑：</strong> 夏夜戶外蚊蟲多，請準備防蚊液與水分。</p></li>
+                                <li className="flex gap-3"><span className="text-blue-400 font-bold">4.</span><p><strong>垃圾不落地：</strong> 保持會場整潔，務必將自己的垃圾帶走。</p></li>
+                              </ul>
+                            </div>
+                          </section>
+                        </div>
+                )}
+                {view === 'detail' && (
+                        <FestivalDetailView festival={selectedFestival} onBack={handleBackToHome} onRegionClick={handleRegionClick} />
+                )}
+              </main>
+
+              <RegionModal region={activeRegion} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSelectFestival={handleSelectFestival} />
+
+              <footer className="border-t border-slate-800 bg-[#0B1021] py-8 text-center text-slate-500 text-sm relative z-20">
+                <p>&copy; 2026 日本花火大會推薦網. All information is simulated for demonstration.</p>
+              </footer>
+            </div>
+    );
+  }
+
+  // 啟動 React 應用程式
+  const rootElement = document.getElementById('root');
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(<App />);
+</script>
+</body>
+</html>
