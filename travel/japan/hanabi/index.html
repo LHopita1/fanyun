@@ -89,6 +89,16 @@
     { name: "秩父夜祭花火大會", pref: "埼玉縣", date: "12/3", region: "關東" }
   ];
 
+  // 動態判斷主要車站的輔助函數
+  const getMajorStation = (pref) => {
+    if (pref === '北海道') return 'JR 札幌站 / 函館站等主要車站';
+    if (pref === '東京都') return 'JR 東京站 / 新宿站 / 上野站';
+    if (pref === '大阪府') return 'JR 大阪站 / 新大阪站';
+    if (pref === '京都府') return 'JR 京都站';
+    if (pref === '沖繩縣') return '那霸機場 / 那霸巴士總站 (沖繩無JR系統)';
+    return `JR ${pref.replace('縣', '')}站 等新幹線/特急主要停靠站`;
+  };
+
   const generateDetail = (festival) => ({
     ...festival,
     id: festival.name,
@@ -98,7 +108,13 @@
       history: `${festival.name}擁有深厚的歷史底蘊。最初的舉辦往往與慰靈、祈福或慶祝當地豐收有關。隨著時間的推移，它逐漸演變成凝聚地方向心力、展現當地煙火職人精湛工藝的競技舞台。`,
       features: `來到${festival.name}，您絕對不能錯過其獨特的「尺玉」連發或是結合現代音樂的「音樂花火」。其特有的施放地形讓煙火的聲響產生震撼的共鳴。此外，壓軸的大型連續煙火（Star Mine）將夜空完全覆蓋，是整個大會的最高潮。`,
       location: `日本 ${festival.region}地區 ${festival.pref} 境內特設會場`,
-      transport: `建議搭乘大眾運輸工具前往。可搭乘 JR 或當地私鐵至${festival.pref}主要車站後，轉乘大會提供的臨時接駁巴士或步行前往會場。舉辦當日周邊會實施嚴格的交通管制，強烈不建議自行開車。`,
+      // 結構化的交通方式資訊
+      transport: {
+        majorStation: getMajorStation(festival.pref),
+        closestStation: `會場周邊步行圈內之當地車站 (JR、私鐵或市區公車站)`,
+        routeToClosest: festival.pref === '沖繩縣' ? '從那霸市區搭乘高速巴士或當地路線公車，前往距離會場最近的公車站。' : `搭乘新幹線或特急列車抵達上述【最大車站】後，轉乘當地 JR 在來線或私鐵至【最靠近的車站】下車。`,
+        routeToVenue: `從【最靠近的車站】出站後，依循大會官方指示牌步行約 10~20 分鐘即可抵達會場；部分大型大會亦會提供付費專屬接駁車。會場周邊將實施嚴格交通管制，強烈不建議自行開車。`
+      },
       attractions: [
         { name: `${festival.pref}傳統老街`, desc: `保留了江戶時代風貌的街道，適合在花火大會前穿著浴衣漫步，品嚐當地小吃。` },
         { name: `當地著名神社/寺廟`, desc: `歷史悠久的信仰中心，您可以前往祈求平安，並欣賞壯麗的傳統建築。` },
@@ -235,9 +251,28 @@
                   <h3 className="text-xl font-bold text-blue-300 mb-4 flex items-center gap-2"><MapPin className="w-6 h-6 text-red-400" />舉辦地點</h3>
                   <p className="text-slate-300 leading-relaxed">{details.location}</p>
                 </div>
+
+                {/* 更新後的結構化交通方式區塊 */}
                 <div className="bg-slate-800/60 rounded-2xl p-6 border border-slate-700 backdrop-blur-sm">
                   <h3 className="text-xl font-bold text-blue-300 mb-4 flex items-center gap-2"><Train className="w-6 h-6 text-emerald-400" />交通方式</h3>
-                  <p className="text-slate-300 leading-relaxed">{details.transport}</p>
+                  <div className="space-y-4">
+                    <div>
+                      <span className="block text-blue-400 font-bold mb-1">■ 鄰近最大車站</span>
+                      <p className="text-slate-300">{details.transport.majorStation}</p>
+                    </div>
+                    <div>
+                      <span className="block text-blue-400 font-bold mb-1">■ 最靠近車站</span>
+                      <p className="text-slate-300">{details.transport.closestStation}</p>
+                    </div>
+                    <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-700/50">
+                      <span className="block text-emerald-400 font-bold text-sm mb-1">1. 車站間轉乘 (大站 ➔ 最近車站)</span>
+                      <p className="text-slate-300 text-sm">{details.transport.routeToClosest}</p>
+                    </div>
+                    <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-700/50">
+                      <span className="block text-pink-400 font-bold text-sm mb-1">2. 前往會場 (最近車站 ➔ 會場)</span>
+                      <p className="text-slate-300 text-sm">{details.transport.routeToVenue}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
