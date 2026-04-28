@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>全日本旅遊精選導覽地圖</title>
+
+  <!-- 載入 Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- 載入 React 核心庫 -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+  <!-- 載入 Babel 編譯器 -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <link rel="icon" href="img/japan.ico" type="image/x-icon">
+
+  <!-- 自訂櫻花與楓葉飄落動畫 -->
+  <style>
+    @keyframes fallAndSway {
+      0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      50% { transform: translateY(45vh) translateX(20px) rotate(180deg); }
+      90% { opacity: 1; }
+      100% { transform: translateY(100vh) translateX(-20px) rotate(360deg); opacity: 0; }
+    }
+    .leaf-petal {
+      position: fixed;
+      top: -10vh;
+      user-select: none;
+      pointer-events: none;
+      animation: fallAndSway linear infinite;
+      z-index: 0;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    }
+
+    /* 美化捲軸 */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #fff0f5; }
+    ::-webkit-scrollbar-thumb { background: #fca5a5; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #f87171; }
+
+    /* 漸層背景色 */
+    .theme-gradient {
+      background: linear-gradient(135deg, #fff0f5 0%, #ffedd5 100%);
+    }
+    .card-gradient {
+      background: linear-gradient(to bottom right, #ffffff, #fff5f5);
+    }
+  </style>
+</head>
+<body class="theme-gradient text-slate-800 min-h-screen font-sans">
+<div id="root"></div>
+
+<script type="text/babel">
+  const { useState, useEffect } = React;
+
+  // --- Svg Icons ---
+  const IconSvg = ({ children, className, onClick }) => (
+          <svg onClick={onClick} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            {children}
+          </svg>
+  );
+  const MenuIcon = ({ className, onClick }) => <IconSvg onClick={onClick} className={className}><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></IconSvg>;
+  const X = ({ className, onClick }) => <IconSvg onClick={onClick} className={className}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></IconSvg>;
+  const MapPin = ({ className }) => <IconSvg className={className}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></IconSvg>;
+  const Sakura = ({ className }) => <span className={className}>🌸</span>;
+  const Maple = ({ className }) => <span className={className}>🍁</span>;
+
+  // --- 資料庫：各區 Google Maps 清單 ---
+  const mapLinksData = {
+    "關東": {
+      "美食類": [
+        { name: "關東（東京及近郊）美食總覽", url: "https://maps.app.goo.gl/Btv98HTneffj4Skq5", emoji: "🍱" },
+        { name: "關東（東京及近郊）拉麵", url: "https://maps.app.goo.gl/VYbxQQwLuuYwhLGd7", emoji: "🍜" },
+        { name: "關東（東京及近郊）壽司店", url: "https://maps.app.goo.gl/9jPYpswehJZGhFTH6", emoji: "🍣" },
+        { name: "關東（東京及近郊）蕎麥麵烏龍麵", url: "https://maps.app.goo.gl/TQoPC2J1EmP6pZok6", emoji: "🥢" },
+        { name: "關東（東京及近郊）異國料理", url: "https://maps.app.goo.gl/w5GQXAa7PQVvkD6j9", emoji: "🍝" },
+        { name: "關東（東京及近郊）焙坊", url: "https://maps.app.goo.gl/VyEmGgf6EoWAJ8vE6", emoji: "🥐" },
+        { name: "關東（東京及近郊）豬排定食", url: "https://maps.app.goo.gl/CJeexY5wURAweezc8", emoji: "🥩" },
+        { name: "關東（東京及近郊）素食", url: "https://maps.app.goo.gl/3MX9hsQPmE4ByjnCA", emoji: "🥗" },
+        { name: "關東（東京及近郊）咖哩飯", url: "https://maps.app.goo.gl/brE6EXRYYVRcWHr7A", emoji: "🍛" },
+        { name: "關東（東京及近郊）燒肉鐵板燒", url: "https://maps.app.goo.gl/D9N3DKfJppygJ4YW8", emoji: "🍖" },
+        { name: "關東（東京及近郊）甜點店", url: "https://maps.app.goo.gl/R1mioTe5De5B9EjP9", emoji: "🍰" },
+        { name: "關東（東京及近郊）咖啡店", url: "https://maps.app.goo.gl/YTN7rnozCkFGTon19", emoji: "☕" },
+        { name: "關東（東京及近郊）和食懷食料理", url: "https://maps.app.goo.gl/Jtb5EVaNTzvoq5hw5", emoji: "🍱" },
+        { name: "關東（東京及近郊）居酒屋", url: "https://maps.app.goo.gl/cK3N3yT9mjk98cxKA", emoji: "🏮" },
+        { name: "關東（東京及近郊）火鍋壽喜燒", url: "https://maps.app.goo.gl/Lc2QdC8a9xEP44Lf8", emoji: "🍲" },
+        { name: "關東（東京及近郊）鰻魚飯", url: "https://maps.app.goo.gl/PSKWdg7CbN8aZyej8", emoji: "🍱" }
+      ],
+      "風景類": [
+        { name: "關東（東京及近郊）神社寺廟", url: "https://maps.app.goo.gl/PPFk6fTpDueeUiq48", emoji: "⛩️" },
+        { name: "關東（東京及近郊）觀景台", url: "https://maps.app.goo.gl/tDesHL7XYKkHRqoy8", emoji: "🔭" },
+        { name: "關東（東京及近郊）自然風景", url: "https://maps.app.goo.gl/afGK9mVridfKvRzg9", emoji: "🗻" },
+        { name: "關東（東京及近郊）地標建築", url: "https://maps.app.goo.gl/XjU66BsQrRQShEKW6", emoji: "🗼" },
+        { name: "關東（東京及近郊）教堂", url: "https://maps.app.goo.gl/5iGR4q46h1xsovpQA", emoji: "⛪" },
+        { name: "關東（東京及近郊）高樓風景", url: "https://maps.app.goo.gl/GeG164LV7f5KDCtUA", emoji: "🏙️" },
+        { name: "關東（東京及近郊）公園庭院", url: "https://maps.app.goo.gl/3X1C6GwMEXTHTM2f8", emoji: "🌳" },
+        { name: "關東（東京及近郊）校園", url: "https://maps.app.goo.gl/rez1VFXCBMseRyB3A", emoji: "🏫" },
+        { name: "關東（東京及近郊）城池", url: "https://maps.app.goo.gl/HYjYd3bkc8Jn4d2q8", emoji: "🏯" }
+      ],
+      "住宿休閒類": [
+        { name: "關東（東京及近郊）溫泉大浴場", url: "https://maps.app.goo.gl/axx4tmoZz1yj5hAa9", emoji: "♨️" },
+        { name: "關東（東京及近郊）遊樂園", url: "https://maps.app.goo.gl/Z2DUmTLttH7ZJhZX9", emoji: "🎡" },
+        { name: "關東（東京及近郊）飯店酒店旅店", url: "https://maps.app.goo.gl/M3pPt3uc8RaCAKAV8", emoji: "🏨" },
+        { name: "關東（東京及近郊）劇場", url: "https://maps.app.goo.gl/Gv42dVEF8uJ1dvqR9", emoji: "🎭" }
+      ],
+      "購物類": [
+        { name: "關東（東京及近郊）商店伴手禮", url: "https://maps.app.goo.gl/gpjVK1k1kDK7pBfg6", emoji: "🎁" },
+        { name: "關東（東京及近郊）購物中心", url: "https://maps.app.goo.gl/VRxY9EGvgNwVfa4B8", emoji: "🛍️" }
+      ]
+    },
+    "近畿": {
+      "美食類": [
+        { name: "近畿（京阪神及近郊）美食總覽", url: "https://maps.app.goo.gl/Tw2wX4y2u13Dfu486", emoji: "🍱" }
+      ],
+      "風景類": [
+        { name: "近畿（京阪神及近郊）神社寺院", url: "https://maps.app.goo.gl/cMQtmCsHioAHWejaA", emoji: "⛩️" },
+        { name: "近畿（京阪神及近郊）自然風景", url: "https://maps.app.goo.gl/tjjjKZua69662igx8", emoji: "🗻" },
+        { name: "近畿（京阪神及近郊）地標建築", url: "https://maps.app.goo.gl/NDZZV3ognQGnNCqW6", emoji: "🗼" },
+        { name: "近畿（京阪神及近郊）美術博物館", url: "https://maps.app.goo.gl/ktgjc5cY8vTxaxXy6", emoji: "🏛️" },
+        { name: "近畿（京阪神及近郊）高樓風景", url: "https://maps.app.goo.gl/fmeFELgziJ7WRLBD8", emoji: "🏙️" },
+        { name: "近畿（京阪神及近郊）觀景台", url: "https://maps.app.goo.gl/w7SwBToApNrH3UB19", emoji: "🔭" },
+        { name: "近畿（京阪神及近郊）城池", url: "https://maps.app.goo.gl/fpmxKEDLbYvReHkn8", emoji: "🏯" },
+        { name: "近畿（京阪神及近郊）公園庭院", url: "https://maps.app.goo.gl/VbzPaYXWTzpLSNfo9", emoji: "🌳" }
+      ],
+      "住宿休閒類": [
+        { name: "近畿（京阪神及近郊）飯店酒店旅店", url: "https://maps.app.goo.gl/tvr7ea3cRH8cVBVp8", emoji: "🏨" },
+        { name: "近畿（京阪神及近郊）溫泉大浴場", url: "https://maps.app.goo.gl/uTFXcCBLNjj5hfQbA", emoji: "♨️" },
+        { name: "近畿（京阪神及近郊）遊樂園", url: "https://maps.app.goo.gl/qiN18gZVrFowgMLz5", emoji: "🎡" }
+      ],
+      "購物類": [
+        { name: "近畿（京阪神及近郊）商店伴手禮", url: "https://maps.app.goo.gl/HVB4Ho3Vaz5QR6ye9", emoji: "🎁" },
+        { name: "近畿（京阪神及近郊）購物中心", url: "https://maps.app.goo.gl/AkUgnE4UUXHj5cXG8", emoji: "🛍️" }
+      ]
+    },
+    "北海道": {
+      "美食類": [
+        { name: "北海道美食", url: "https://maps.app.goo.gl/NSQNQe8NBFDkvUDq6", emoji: "🦀" }
+      ],
+      "風景類": [
+        { name: "北海道觀景台", url: "https://maps.app.goo.gl/jTm8bTMQx8KYawKe8", emoji: "🔭" },
+        { name: "北海道自然風景", url: "https://maps.app.goo.gl/jviJdKumNJjhbg8n6", emoji: "🗻" },
+        { name: "北海道神社寺院", url: "https://maps.app.goo.gl/SjWXaQvMrvr8tutc9", emoji: "⛩️" },
+        { name: "北海道高樓風景", url: "https://maps.app.goo.gl/vR91D6TgpDshNXth6", emoji: "🏙️" },
+        { name: "北海道地標建築", url: "https://maps.app.goo.gl/PWoAN1Kg8hGk5v938", emoji: "🗼" },
+        { name: "北海道校園", url: "https://maps.app.goo.gl/yJiYcRW4UNYK9Fxx7", emoji: "🏫" },
+        { name: "北海道美術博物館", url: "https://maps.app.goo.gl/qBp8jtiG3b8ozAPy9", emoji: "🏛️" },
+        { name: "北海道教堂", url: "https://maps.app.goo.gl/rujMJZqhBeAP24Px8", emoji: "⛪" },
+        { name: "北海道公園庭院", url: "https://maps.app.goo.gl/tqEgve9kpaEjsUaq9", emoji: "🌳" }
+      ],
+      "住宿休閒類": [
+        { name: "北海道飯店酒店旅店", url: "https://maps.app.goo.gl/NbkU4ouTPDB7NxkS6", emoji: "🏨" },
+        { name: "北海道溫泉", url: "https://maps.app.goo.gl/rKQwmyFtHzgUEWzJ9", emoji: "♨️" },
+        { name: "北海道遊樂園", url: "https://maps.app.goo.gl/dUcfZrecMeNkCvFP8", emoji: "🎡" }
+      ],
+      "購物類": [
+        { name: "北海道商店伴手禮", url: "https://maps.app.goo.gl/2UnSeVMEj2WUED369", emoji: "🎁" },
+        { name: "北海道購物中心", url: "https://maps.app.goo.gl/2XnxrqmuJ4oubfWu8", emoji: "🛍️" }
+      ]
+    },
+    "東北": {
+      "美食類": [
+        { name: "東北美食", url: "https://maps.app.goo.gl/Z7gzmwgd679esv5t6", emoji: "🍱" }
+      ],
+      "風景類": [
+        { name: "東北公園庭院", url: "https://maps.app.goo.gl/RExK9kuFBJVQXShE6", emoji: "🌳" },
+        { name: "東北自然風景", url: "https://maps.app.goo.gl/yadGGegKsobwqiBi7", emoji: "🗻" },
+        { name: "東北地標建築", url: "https://maps.app.goo.gl/VxMNUpxE74YS6uwm9", emoji: "🗼" },
+        { name: "東北觀景台", url: "https://maps.app.goo.gl/m9BW5ZG3ivNQEeCfA", emoji: "🔭" },
+        { name: "東北城池", url: "https://maps.app.goo.gl/EJnCbSUAPPPuYcKu5", emoji: "🏯" },
+        { name: "東北校園", url: "https://maps.app.goo.gl/ik9TWXZdnxHnnn478", emoji: "🏫" },
+        { name: "東北美術博物館", url: "https://maps.app.goo.gl/VH6Qj3CJMTjQJDL6A", emoji: "🏛️" },
+        { name: "東北高樓風景", url: "https://maps.app.goo.gl/haHYZdDYsErEt1FF7", emoji: "🏙️" }
+      ],
+      "住宿休閒類": [
+        { name: "東北飯店酒店旅館", url: "https://maps.app.goo.gl/khau5ufgmYG3pNvo6", emoji: "🏨" },
+        { name: "東北遊樂園", url: "https://maps.app.goo.gl/FMJN1tZiCKG3rZ8W7", emoji: "🎡" }
+      ],
+      "購物類": [
+        { name: "東北商店伴手禮", url: "https://maps.app.goo.gl/Y8mzbE4iAgxn521R6", emoji: "🎁" },
+        { name: "東北購物中心", url: "https://maps.app.goo.gl/D1sFwnNWhVVBmgPA6", emoji: "🛍️" }
+      ]
+    },
+    "中部": {
+      "美食類": [
+        { name: "北陸美食", url: "https://maps.app.goo.gl/pphc3TuZ5ufLrHwc6", emoji: "🦀" },
+        { name: "中部美食", url: "https://maps.app.goo.gl/tSeJphPogaB3JXcb8", emoji: "🍱" }
+      ],
+      "風景類": [
+        { name: "北陸公園庭院", url: "https://maps.app.goo.gl/91qBeLYUsAmVtKhY6", emoji: "🌳" },
+        { name: "北陸城池", url: "https://maps.app.goo.gl/Fhsyx1bwZiSVWqpB9", emoji: "🏯" },
+        { name: "北陸地標建築", url: "https://maps.app.goo.gl/jgm9cFQfxTM3ukvB6", emoji: "🗼" },
+        { name: "北陸觀景台", url: "https://maps.app.goo.gl/Dd4RDj9PNARLDjZi6", emoji: "🔭" },
+        { name: "北陸自然風景", url: "https://maps.app.goo.gl/g2FXbhMwke4iu2wj8", emoji: "🗻" },
+        { name: "北陸美術博物館", url: "https://maps.app.goo.gl/qYN3ab6S7HRrPhsc7", emoji: "🏛️" },
+        { name: "中部地區美術博物館", url: "https://maps.app.goo.gl/kuMfdNup2REdkfgL8", emoji: "🏛️" },
+        { name: "中部地區神社寺院", url: "https://maps.app.goo.gl/UXGjarA4B3scHGjR9", emoji: "⛩️" },
+        { name: "中部地區展望台", url: "https://maps.app.goo.gl/r5McVFVHxCAyDQN7A", emoji: "🔭" },
+        { name: "中部地區地標建築", url: "https://maps.app.goo.gl/5e9JMQsg8yGuAtgT7", emoji: "🗼" },
+        { name: "中部地區公園庭院", url: "https://maps.app.goo.gl/kxK3up3xzxWNeACs6", emoji: "🌳" },
+        { name: "中部地區自然風景", url: "https://maps.app.goo.gl/t8A1cRveuYTqVTFn8", emoji: "🗻" },
+        { name: "中部地區城池", url: "https://maps.app.goo.gl/5E5uYtvpTv7rSQvq8", emoji: "🏯" }
+      ],
+      "住宿休閒類": [
+        { name: "北陸溫泉", url: "https://maps.app.goo.gl/XNoXJhocfgd6PRmS8", emoji: "♨️" },
+        { name: "北陸飯店酒店旅館", url: "https://maps.app.goo.gl/WqykzwzgMMNZK2w48", emoji: "🏨" },
+        { name: "北陸遊樂園", url: "https://maps.app.goo.gl/qpN5viim9emgLuAE8", emoji: "🎡" },
+        { name: "中部地區飯店酒店旅館", url: "https://maps.app.goo.gl/FBXryPH8qLAQrLNE7", emoji: "🏨" },
+        { name: "中部地區遊樂園", url: "https://maps.app.goo.gl/7Yjj7Qd5iX7ezCoXA", emoji: "🎡" }
+      ],
+      "購物類": [
+        { name: "北陸購物中心", url: "https://maps.app.goo.gl/35nujQGeRroVmf766", emoji: "🛍️" },
+        { name: "北陸商店伴手禮", url: "https://maps.app.goo.gl/FfC8HfB23fiHnKFSA", emoji: "🎁" },
+        { name: "中部地區購物中心", url: "https://maps.app.goo.gl/6BgABJkZQUiNebfu6", emoji: "🛍️" },
+        { name: "中部地區商店伴手禮", url: "https://maps.app.goo.gl/ENC1fBBU8fDg9dtn8", emoji: "🎁" }
+      ]
+    },
+    "中國": {
+      "美食類": [
+        { name: "中國地區美食", url: "https://maps.app.goo.gl/dzL6KQuaQAbaVQr8A", emoji: "🍱" }
+      ],
+      "風景類": [
+        { name: "中國地區地標建築", url: "https://maps.app.goo.gl/Ee2p3CMwQUrD83LZ9", emoji: "🗼" },
+        { name: "中國地區展望台", url: "https://maps.app.goo.gl/Hr8iQ7aQjdR21yHH6", emoji: "🔭" },
+        { name: "中國地區神社寺院", url: "https://maps.app.goo.gl/73CBWNCQmKQnuqAY9", emoji: "⛩️" },
+        { name: "中國地區自然風景", url: "https://maps.app.goo.gl/8tmm96EhUkhCuYdk9", emoji: "🗻" },
+        { name: "中國地區城池", url: "https://maps.app.goo.gl/3iq18BgMEr818RG67", emoji: "🏯" },
+        { name: "中國地區美術博物館", url: "https://maps.app.goo.gl/2Y4EUwQU5RwYZd7WA", emoji: "🏛️" },
+        { name: "中國地區公園庭院", url: "https://maps.app.goo.gl/ERCXP5nK4cft7J889", emoji: "🌳" }
+      ],
+      "住宿休閒類": [
+        { name: "中國地區飯店酒店旅館", url: "https://maps.app.goo.gl/NTJiwLz6oLmZ8eLY7", emoji: "🏨" },
+        { name: "中國地區遊樂園", url: "https://maps.app.goo.gl/NUAjM6sKPSefwcNr9", emoji: "🎡" }
+      ],
+      "購物類": [
+        { name: "中國地區商店伴手禮", url: "https://maps.app.goo.gl/VuvdM5rLVETtttjz8", emoji: "🎁" },
+        { name: "中國地區購物中心", url: "https://maps.app.goo.gl/yc8XwsH4o27hqPP96", emoji: "🛍️" }
+      ]
+    },
+    "四國": {
+      "美食類": [
+        { name: "四國美食", url: "https://maps.app.goo.gl/uYP1fgH9TtGpuFxS9", emoji: "🍜" }
+      ],
+      "風景類": [
+        { name: "四國公園庭院", url: "https://maps.app.goo.gl/cAB2JL2hFPjWxbRG8", emoji: "🌳" },
+        { name: "四國神社寺院", url: "https://maps.app.goo.gl/ycV5MFVc9HGR97ZB7", emoji: "⛩️" },
+        { name: "四國高樓風景", url: "https://maps.app.goo.gl/NwnJczFruBbcmE2K9", emoji: "🏙️" },
+        { name: "四國城池", url: "https://maps.app.goo.gl/jQYDMBqK62FMbXKs6", emoji: "🏯" },
+        { name: "四國美術博物館", url: "https://maps.app.goo.gl/dfQVaEwd9YoLm8M57", emoji: "🏛️" },
+        { name: "四國地標建築", url: "https://maps.app.goo.gl/fnfzzsKsBPUawG9y8", emoji: "🗼" },
+        { name: "四國展望台", url: "https://maps.app.goo.gl/2fFEJndKCqKQQwhW7", emoji: "🔭" },
+        { name: "四國自然風景", url: "https://maps.app.goo.gl/x6RSinSaDftF8hdT7", emoji: "🗻" }
+      ],
+      "住宿休閒類": [
+        { name: "四國飯店酒店旅館", url: "https://maps.app.goo.gl/rBvMKmc74HBjgyC89", emoji: "🏨" },
+        { name: "四國遊樂園", url: "https://maps.app.goo.gl/r1xEfufatb3E2Pgj6", emoji: "🎡" },
+        { name: "四國溫泉", url: "https://maps.app.goo.gl/jwme1SXbZAQdkLBG7", emoji: "♨️" }
+      ],
+      "購物類": [
+        { name: "四國商店伴手禮", url: "https://maps.app.goo.gl/cT9EDCUhSxjQpdU26", emoji: "🎁" },
+        { name: "四國購物中心", url: "https://maps.app.goo.gl/iSx55XBH1wbHSx8TA", emoji: "🛍️" }
+      ]
+    },
+    "九州": {
+      "美食類": [
+        { name: "九州美食", url: "https://maps.app.goo.gl/dZkvEocVcdapyPdy9", emoji: "🍜" }
+      ],
+      "風景類": [
+        { name: "九州城池", url: "https://maps.app.goo.gl/SgK1MkUzNG7UzpNy7", emoji: "🏯" },
+        { name: "九州自然風景", url: "https://maps.app.goo.gl/gwpngvGUF2yA4Fex7", emoji: "🗻" },
+        { name: "九州神社寺院", url: "https://maps.app.goo.gl/VUaTrpSp9uyokf5U8", emoji: "⛩️" },
+        { name: "九州教堂", url: "https://maps.app.goo.gl/jaGqCsbqHRvvxC5V8", emoji: "⛪" },
+        { name: "九州地標建築", url: "https://maps.app.goo.gl/FC8HFrVv7EuQzNgVA", emoji: "🗼" },
+        { name: "九州公園庭院", url: "https://maps.app.goo.gl/TDUi7WB4BVP8UAnw7", emoji: "🌳" },
+        { name: "九州展望台", url: "https://maps.app.goo.gl/Rcsjs6zXqW5E2xo28", emoji: "🔭" },
+        { name: "九州美術博物館", url: "https://maps.app.goo.gl/5a98di9zTgmgBtSY9", emoji: "🏛️" },
+        { name: "九州高樓風景", url: "https://maps.app.goo.gl/SGNtucPBF11eH31h7", emoji: "🏙️" }
+      ],
+      "住宿休閒類": [
+        { name: "九州溫泉", url: "https://maps.app.goo.gl/vQWnJZmUCu74aoqd7", emoji: "♨️" },
+        { name: "九州飯店酒店旅館", url: "https://maps.app.goo.gl/DNmJ2TF4G6pnbhtaA", emoji: "🏨" },
+        { name: "九州遊樂園", url: "https://maps.app.goo.gl/KZbLgBVDGNgomkfY8", emoji: "🎡" }
+      ],
+      "購物類": [
+        { name: "九州商店伴手禮", url: "https://maps.app.goo.gl/aaai7HQ3ASuvrkFD8", emoji: "🎁" },
+        { name: "九州購物中心", url: "https://maps.app.goo.gl/RhZXjkvH3BwinuGq7", emoji: "🛍️" }
+      ]
+    },
+    "沖繩": {
+      "美食類": [
+        { name: "沖繩美食", url: "https://maps.app.goo.gl/FbvwzbmwTs1vXxLr7", emoji: "🍖" }
+      ],
+      "風景類": [
+        { name: "沖繩展望台", url: "https://maps.app.goo.gl/AoeWmrdoMYn2p9Mz9", emoji: "🔭" },
+        { name: "沖繩城池", url: "https://maps.app.goo.gl/n5W75KsAhWu9pdza6", emoji: "🏯" },
+        { name: "沖繩地標建築", url: "https://maps.app.goo.gl/AtDHwPtMRAaYVw4F8", emoji: "🗼" },
+        { name: "沖繩公園庭院", url: "https://maps.app.goo.gl/eubYMp8PUuHyszEW9", emoji: "🌳" },
+        { name: "沖繩美術博物館", url: "https://maps.app.goo.gl/qtYPXpJPQKUHHj8R9", emoji: "🏛️" },
+        { name: "沖繩自然風景", url: "https://maps.app.goo.gl/DfEUgFCxw64g8zfs8", emoji: "🏖️" },
+        { name: "沖繩神社寺院", url: "https://maps.app.goo.gl/aeANontVM7horWd9A", emoji: "⛩️" }
+      ],
+      "住宿休閒類": [
+        { name: "沖繩飯店酒店旅館", url: "https://maps.app.goo.gl/fy728XLZo83959gKA", emoji: "🏨" },
+        { name: "沖繩遊樂園", url: "https://maps.app.goo.gl/eW86a7W7A1KoyGpw9", emoji: "🎡" }
+      ],
+      "購物類": [
+        { name: "沖繩商店伴手禮", url: "https://maps.app.goo.gl/KxudbZkAmmz9UonQ9", emoji: "🎁" },
+        { name: "沖繩購物中心", url: "https://maps.app.goo.gl/FLuNjhhDDXWAzv1m8", emoji: "🛍️" }
+      ]
+    }
+  };
+
+  // --- 資料庫：各區詳細介紹 ---
+  const regionDetailsInfo = [
+    {
+      name: "北海道", icon: "⛄", bg: "bg-blue-50", text: "text-blue-900", border: "border-blue-200",
+      history: "舊稱「蝦夷地」，早期為阿伊努族（Ainu）的生活領域。明治維新後正式改名為北海道並設立開拓使，造就了不同於本州的西洋建築與獨特開拓文化。",
+      geo: "日本最北端也是面積最大的都道府縣。包含札幌、函館、旭川、富良野等知名地。從台灣可直飛「新千歲機場(CTS)」、「函館機場(HKD)」、「旭川機場(AKJ)」。",
+      culture: "融合了阿伊努原住民文化與明治西洋風。盛產頂級海鮮（螃蟹、海膽）、成吉思汗烤羊肉與乳製品。",
+      climate: "亞寒帶氣候，夏季涼爽是避暑勝地，冬季漫長且降雪量極大，以世界頂級的「粉雪」聞名全球。",
+      scenery: "富良野的薰衣草花海、美瑛的拼布之路、函館的百萬夜景，以及壯麗的流冰奇景。"
+    },
+    {
+      name: "東北", icon: "🍎", bg: "bg-emerald-50", text: "text-emerald-900", border: "border-emerald-200",
+      history: "古稱「奧州」，戰國時代由伊達政宗等大名統治，留下了豐富的歷史遺跡與武士文化。這裡也是日本神話傳說與妖怪故事最密集的地區。",
+      geo: "包含青森、秋田、岩手、山形、宮城、福島六縣。從台灣可直飛「仙台國際機場(SDJ)」，或搭飛機至花卷、青森機場。",
+      culture: "擁有震撼人心的東北三大祭（青森睡魔祭、秋田竿燈祭、仙台七夕祭）。在地美食如牛舌、烤米棒及頂級和牛。",
+      climate: "四季分明，秋季賞楓名所極多，冬季豪雪，造就了知名的「藏王樹冰」與眾多優質滑雪場。",
+      scenery: "奧入瀨溪流的絕美秋楓、銀山溫泉的浪漫冬雪、以及藏王連峰的樹冰奇景。"
+    },
+    {
+      name: "關東", icon: "🗼", bg: "bg-slate-100", text: "text-slate-800", border: "border-slate-300",
+      history: "德川家康在江戶（今東京）建立幕府後，成為日本的政治與經濟中心長達四百多年，融合了江戶時代的傳統與現代化的科技。",
+      geo: "包含東京、神奈川、千葉、埼玉、群馬、栃木、茨城一都六縣。台灣直飛極度便利，可選「成田機場(NRT)」或「羽田機場(HND)」。",
+      culture: "流行文化的發源地，擁有動漫、時尚與最尖端的科技，同時也保留了淺草寺、明治神宮等傳統信仰中心。",
+      climate: "溫帶氣候，夏季炎熱潮濕，冬季乾燥少雪（除北部山區外）。",
+      scenery: "東京鐵塔與晴空塔的高空夜景、箱根的溫泉與富士山遙望、日光東照宮的華麗建築。"
+    },
+    {
+      name: "中部", icon: "🏔️", bg: "bg-teal-50", text: "text-teal-900", border: "border-teal-200",
+      history: "日本的中心點，戰國三傑（織田信長、豐臣秀吉、德川家康）皆出身於此。地理上常分為東海地區與北陸地區。",
+      geo: "包含愛知(名古屋)、靜岡、岐阜、長野、山梨、新潟、富山、石川、福井。台灣可直飛「名古屋中部國際機場(NGO)」與「小松機場(KMQ)」。",
+      culture: "白川鄉合掌村的世界遺產文化、北陸的金澤金箔工藝，以及名古屋獨特的「味噌豬排」美食文化。",
+      climate: "跨越極大，太平洋側氣候溫和，日本海側（北陸、新潟）則是世界級的豪雪地帶。",
+      scenery: "立山黑部的雪之大谷、富士山的壯麗山容、白川鄉冬季點燈與上高地的絕美仙境。"
+    },
+    {
+      name: "近畿", icon: "🏯", bg: "bg-amber-50", text: "text-amber-900", border: "border-amber-200",
+      history: "又稱「關西」，日本千年以來的歷史心臟。包含平城京（奈良）與平安京（京都），保留了最完整的國寶與世界文化遺產。",
+      geo: "包含大阪、京都、奈良、兵庫(神戶)、滋賀、和歌山、三重。從台灣直飛「關西國際機場(KIX)」為最主要入口。",
+      culture: "傳統藝妓文化、茶道發源、以及大阪的「天下廚房」美食（章魚燒、大阪燒）。當地人操著充滿熱情的關西腔。",
+      climate: "盆地地形導致夏季極為悶熱，冬季氣溫低但市區少降雪，北部靠日本海側則會下雪。",
+      scenery: "京都的清水寺與金閣寺、奈良公園的梅花鹿、神戶港的千萬夜景與姬路城的白鷺之美。"
+    },
+    {
+      name: "中國", icon: "⛩️", bg: "bg-orange-50", text: "text-orange-900", border: "border-orange-200",
+      history: "日本神話的發源地（出雲神話），也是毛利氏等強大戰國大名的領地。廣島則承載了近代二戰的和平祈願歷史。",
+      geo: "包含廣島、岡山、鳥取、島根、山口五縣。台灣可直飛「岡山機場(OKJ)」或「廣島機場(HIJ)」。",
+      culture: "出雲大社的結緣信仰、瀨戶內海的藝術祭跳島文化。盛產牡蠣、白桃與麝香葡萄。",
+      climate: "瀨戶內海側氣候溫暖少雨（被稱為晴天之國），日本海側（山陰地方）冬季多雲多雪。",
+      scenery: "嚴島神社的海上大鳥居、鳥取砂丘的壯觀沙漠、倉敷美觀地區的白壁運河風情。"
+    },
+    {
+      name: "四國", icon: "🍋", bg: "bg-lime-50", text: "text-lime-900", border: "border-lime-200",
+      history: "自古以來便是佛教大師「空海」開創的「四國八十八箇所」遍路朝聖之地，充滿了濃厚的修行與祈福氛圍。",
+      geo: "日本四大島中最小的一個。包含香川、德島、愛媛、高知四縣。從台灣可直飛「高松機場(TAK)」或「松山機場(MYJ)」。",
+      culture: "讚岐烏龍麵的故鄉、充滿活力的阿波舞祭典，以及日本最古老溫泉之一的道後溫泉。",
+      climate: "受黑潮影響，全年氣候溫暖，南部的太平洋側夏季多雨，北部的瀨戶內海側則氣候宜人。",
+      scenery: "鳴門海峽的巨大漩渦、四萬十川的清澈秘境、以及瀨戶內海星羅棋布的小島。"
+    },
+    {
+      name: "九州", icon: "🌋", bg: "bg-red-50", text: "text-red-900", border: "border-red-200",
+      history: "日本與亞洲大陸及西洋最早接觸的門戶，長崎保留了豐富的異國風情。也是明治維新的發源地（薩摩藩、長州藩）。",
+      geo: "包含福岡、佐賀、長崎、大分、熊本、宮崎、鹿兒島七縣。台灣可直飛「福岡機場(FUK)」、「熊本機場(KMJ)」等多個機場。",
+      culture: "豚骨拉麵（博多拉麵）的聖地、極度豐富的溫泉文化（別府、由布院），當地居民以熱情直爽著稱。",
+      climate: "氣候溫暖濕潤，夏季常有颱風。除了高山地區外，平地極少下雪。",
+      scenery: "阿蘇火山的壯麗破火山口、高千穗峽的神秘瀑布、以及由布院溫泉的晨霧之美。"
+    },
+    {
+      name: "沖繩", icon: "🌺", bg: "bg-cyan-50", text: "text-cyan-900", border: "border-cyan-200",
+      history: "曾經是獨立的「琉球王國」，與中國、東南亞及日本本土皆有頻繁的貿易往來，發展出截然不同的獨特海島文化。",
+      geo: "位於日本最西南方的一串島嶼。台灣直飛「那霸機場(OKA)」僅需約1.5小時，是距離台灣最近的日本縣市。",
+      culture: "三線琴音樂、風獅爺（Shisa）、獨特的琉球料理（如苦瓜炒豆腐），氛圍悠閒緩慢。",
+      climate: "亞熱帶氣候，全年溫暖，即使冬季也極少低於15度，是日本唯一的無雪地帶。",
+      scenery: "宮古藍的透明漸層海水、美麗海水族館的黑潮之海、以及首里城的琉球紅瓦建築。"
+    }
+  ];
+
+  // 日本地圖區塊位置設定
+  const regionsMapConfig = [
+    { id: "北海道", name: "北海道", color: "bg-blue-100 text-blue-800", hover: "hover:bg-blue-200 hover:border-blue-300", col: "col-start-3", row: "row-start-1" },
+    { id: "東北", name: "東北", color: "bg-emerald-100 text-emerald-800", hover: "hover:bg-emerald-200 hover:border-emerald-300", col: "col-start-3", row: "row-start-2" },
+    { id: "關東", name: "關東", color: "bg-slate-100 text-slate-800", hover: "hover:bg-slate-200 hover:border-slate-300", col: "col-start-3", row: "row-start-3" },
+    { id: "中部", name: "中部", color: "bg-teal-100 text-teal-800", hover: "hover:bg-teal-200 hover:border-teal-300", col: "col-start-2", row: "row-start-3" },
+    { id: "近畿", name: "近畿", color: "bg-amber-100 text-amber-800", hover: "hover:bg-amber-200 hover:border-amber-300", col: "col-start-1", row: "row-start-3" },
+    { id: "中國", name: "中國", color: "bg-orange-100 text-orange-800", hover: "hover:bg-orange-200 hover:border-orange-300", col: "col-start-1", row: "row-start-4" },
+    { id: "四國", name: "四國", color: "bg-lime-100 text-lime-800", hover: "hover:bg-lime-200 hover:border-lime-300", col: "col-start-2", row: "row-start-4" },
+    { id: "九州", name: "九州", color: "bg-red-100 text-red-800", hover: "hover:bg-red-200 hover:border-red-300", col: "col-start-1", row: "row-start-5" },
+    { id: "沖繩", name: "沖繩", color: "bg-cyan-100 text-cyan-800", hover: "hover:bg-cyan-200 hover:border-cyan-300", col: "col-start-1", row: "row-start-6" },
+  ];
+
+  // --- 背景動畫組件 (櫻花與楓葉) ---
+  const LeavesBackground = () => {
+    const leaves = Array.from({ length: 40 }).map((_, i) => {
+      const isSakura = Math.random() > 0.4;
+      const left = `${Math.random() * 100}vw`;
+      const animationDuration = `${Math.random() * 8 + 7}s`;
+      const animationDelay = `${Math.random() * -15}s`;
+      const opacity = Math.random() * 0.4 + 0.2;
+      const fontSize = `${Math.random() * 1 + 0.8}rem`;
+
+      return (
+              <div key={i} className="leaf-petal" style={{ left, animationDuration, animationDelay, opacity, fontSize }}>
+                {isSakura ? "🌸" : "🍁"}
+              </div>
+      );
+    });
+    return <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">{leaves}</div>;
+  };
+
+  // --- 右上角更多資訊 Modal ---
+  const MoreInfoModal = ({ isOpen, onClose }) => {
+    if (!isOpen) return null;
+    return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-opacity">
+              <div className="bg-white/95 rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl relative border border-pink-100 p-6 text-center animate-in zoom-in-95 duration-200">
+                <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-pink-500 transition-colors cursor-pointer p-1">
+                  <X className="w-6 h-6" />
+                </button>
+                <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center justify-center gap-2">
+                  <MapPin className="w-5 h-5 text-pink-500" /> 更多日本資訊地圖
+                </h2>
+                <div className="space-y-4">
+                  <a href="https://lhopita1.github.io/fanyun/travel/japan/ski/" target="_blank" rel="noopener noreferrer"
+                     className="block w-full py-3 px-4 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl text-blue-800 font-bold transition-all hover:scale-105 shadow-sm">
+                    🏂 日本滑雪場推薦
+                  </a>
+                  <a href="https://lhopita1.github.io/fanyun/travel/japan/hanabi/" target="_blank" rel="noopener noreferrer"
+                     className="block w-full py-3 px-4 bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-xl text-orange-800 font-bold transition-all hover:scale-105 shadow-sm">
+                    🎆 日本花火大會推薦
+                  </a>
+                </div>
+              </div>
+            </div>
+    );
+  };
+
+  // --- 地圖彈出視窗組件 (顯示 Google Maps 分類連結) ---
+  const RegionLinksModal = ({ region, isOpen, onClose }) => {
+    if (!isOpen || !region) return null;
+    const data = mapLinksData[region];
+
+    return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity">
+              <div className="bg-white/95 border-2 border-pink-200 rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl relative flex flex-col max-h-[85vh] animate-in slide-in-from-bottom-4">
+                <div className="flex justify-between items-center p-5 border-b border-pink-100 bg-gradient-to-r from-pink-50 to-orange-50 shrink-0">
+                  <h2 className="text-2xl font-black text-slate-800 flex items-center gap-2">
+                    <Sakura className="w-6 h-6" /> {region} 精選旅遊清單
+                  </h2>
+                  <button onClick={onClose} className="text-slate-400 hover:text-pink-600 transition-colors p-2 rounded-full hover:bg-white cursor-pointer shadow-sm">
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+
+                <div className="overflow-y-auto p-4 md:p-6 flex-1 space-y-8">
+                  {Object.entries(data).map(([categoryName, links], idx) => (
+                          <div key={idx} className="space-y-3">
+                            <h3 className="text-lg font-bold text-pink-700 border-b-2 border-pink-100 pb-2 flex items-center gap-2">
+                              {categoryName} <span className="text-sm font-normal text-slate-400">({links.length})</span>
+                            </h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              {links.map((link, l_idx) => (
+                                      <a key={l_idx} href={link.url} target="_blank" rel="noopener noreferrer"
+                                         className="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-100 shadow-sm hover:border-pink-300 hover:shadow-md transition-all group">
+                                        <span className="text-2xl group-hover:scale-110 transition-transform">{link.emoji}</span>
+                                        <span className="font-bold text-slate-700 text-sm group-hover:text-pink-600">{link.name}</span>
+                                      </a>
+                              ))}
+                            </div>
+                          </div>
+                  ))}
+                </div>
+
+                <div className="p-4 bg-slate-50 border-t border-slate-100 text-center text-xs text-slate-500 shrink-0">
+                  ※ 點擊按鈕將開啟 Google Maps 清單
+                </div>
+              </div>
+            </div>
+    );
+  };
+
+  // --- 主應用程式 ---
+  function App() {
+    const [activeRegion, setActiveRegion] = useState(null);
+    const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+    const [isMenuModalOpen, setIsMenuModalOpen] = useState(false);
+
+    const handleRegionClick = (regionId) => {
+      setActiveRegion(regionId);
+      setIsMapModalOpen(true);
+    };
+
+    return (
+            <div className="min-h-screen relative font-sans selection:bg-pink-200 selection:text-pink-900">
+              <LeavesBackground />
+
+              {/* Navbar */}
+              <nav className="sticky top-0 z-40 bg-white/70 backdrop-blur-md border-b border-white/50 shadow-sm">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="flex items-center justify-between h-16 md:h-20">
+                    <div className="flex items-center gap-2 md:gap-3">
+                      <Sakura className="text-2xl md:text-3xl animate-spin-slow" />
+                      <div className="flex flex-col">
+                    <span className="text-xl md:text-3xl font-black text-slate-800 tracking-wider">
+                      全日本旅遊精選導覽地圖
+                    </span>
+                        <span className="text-xs md:text-sm font-bold text-pink-600 tracking-widest hidden sm:block">
+                      Japan Travel Guide
+                    </span>
+                      </div>
+                      <Maple className="text-2xl md:text-3xl" />
+                    </div>
+
+                    <button onClick={() => setIsMenuModalOpen(true)} className="flex items-center gap-2 bg-white border border-pink-200 text-pink-700 hover:bg-pink-50 font-bold py-2 px-4 rounded-xl shadow-sm transition-all cursor-pointer">
+                      <MenuIcon className="w-5 h-5" />
+                      <span className="hidden sm:inline">更多地圖</span>
+                    </button>
+                  </div>
+                </div>
+              </nav>
+
+              <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+                {/* 標語區塊 */}
+                <section className="text-center space-y-6 mt-4 relative z-20 mb-12 animate-in fade-in duration-700">
+                  <h1 className="text-3xl md:text-5xl font-black text-slate-800 tracking-tight drop-shadow-sm leading-tight">
+                    尋找您的專屬日本回憶 <br className="hidden md:block"/>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-orange-500">
+                  發掘最道地的日本之美
+                </span>
+                  </h1>
+                  <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed">
+                    點擊下方日本地圖分區，立刻探索我們為您精心整理的 Google Maps 旅遊清單，從必吃美食到絕美風景，一鍵收藏您的完美行程。
+                  </p>
+                </section>
+
+                {/* 互動地圖區塊 */}
+                <section className="mb-20 animate-in slide-in-from-bottom-8 duration-700">
+                  <div className="w-full max-w-3xl mx-auto p-6 md:p-10 bg-white/80 rounded-[3rem] backdrop-blur-md border border-white shadow-2xl relative z-20">
+                    <div className="text-center mb-8">
+                      <h3 className="text-xl md:text-2xl text-pink-800 font-black tracking-widest flex items-center justify-center gap-2">
+                        <MapPin className="w-6 h-6 text-pink-500" />
+                        點擊地區探索日本
+                      </h3>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-3 md:gap-5 max-w-lg mx-auto">
+                      {regionsMapConfig.map((region) => (
+                              <button
+                                      key={region.id}
+                                      onClick={() => handleRegionClick(region.id)}
+                                      className={`
+                        ${region.col} ${region.row} relative rounded-2xl p-5 md:p-8 transition-all duration-300 font-black text-lg md:text-2xl border border-white shadow-sm cursor-pointer
+                        ${region.color} ${region.hover} hover:shadow-lg hover:-translate-y-1
+                      `}
+                              >
+                                {region.name}
+                              </button>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+
+                {/* 地區詳細介紹區塊 */}
+                <section className="max-w-5xl mx-auto space-y-12">
+                  <div className="text-center mb-10">
+                    <h2 className="text-3xl font-black text-slate-800 inline-block border-b-4 border-pink-300 pb-2">
+                      認識日本九大地區
+                    </h2>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {regionDetailsInfo.map((info, idx) => (
+                            <div key={idx} className={`card-gradient rounded-[2rem] p-6 border ${info.border} shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden group`}>
+                              <div className={`absolute top-0 right-0 w-24 h-24 ${info.bg} rounded-bl-full -z-10 group-hover:scale-110 transition-transform`}></div>
+                              <h3 className={`text-2xl font-black ${info.text} mb-4 flex items-center gap-2 border-b border-slate-100 pb-2`}>
+                                <span className="text-3xl">{info.icon}</span> {info.name}
+                              </h3>
+                              <div className="space-y-3 text-sm text-slate-600">
+                                <p><strong className="text-slate-800">📜 歷史：</strong>{info.history}</p>
+                                <p><strong className="text-slate-800">✈️ 地理與交通：</strong>{info.geo}</p>
+                                <p><strong className="text-slate-800">🏮 文化：</strong>{info.culture}</p>
+                                <p><strong className="text-slate-800">🌤️ 氣候：</strong>{info.climate}</p>
+                                <p><strong className="text-slate-800">📸 風景：</strong>{info.scenery}</p>
+                              </div>
+                            </div>
+                    ))}
+                  </div>
+                </section>
+
+              </main>
+
+              {/* 彈出視窗：分類清單 */}
+              <RegionLinksModal region={activeRegion} isOpen={isMapModalOpen} onClose={() => setIsMapModalOpen(false)} />
+
+              {/* 彈出視窗：右上角選單 */}
+              <MoreInfoModal isOpen={isMenuModalOpen} onClose={() => setIsMenuModalOpen(false)} />
+
+              <footer className="mt-20 bg-white/60 border-t border-white py-10 text-center text-slate-500 text-sm relative z-20 backdrop-blur-sm">
+                <div className="flex justify-center items-center gap-4 mb-4">
+                  <Sakura className="text-xl" />
+                  <Maple className="text-xl" />
+                </div>
+                <p className="font-bold">2026 &copy; 全日本旅遊精選導覽地圖. All rights reserved by FY Chen.</p>
+              </footer>
+            </div>
+    );
+  }
+
+  const rootElement = document.getElementById('root');
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(<App />);
+</script>
+</body>
+</html>
